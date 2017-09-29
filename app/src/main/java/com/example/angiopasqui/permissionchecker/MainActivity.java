@@ -23,6 +23,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("DEBUG","DASDSADADSADADA");
+
         icon_lock_unlcok = (ImageView) findViewById(R.id.icon_lock_unlock);
         textMonitoring = (TextView) findViewById(R.id.monitoring);
         icon_listApp = (ImageView) findViewById(R.id.icon_listApp);
