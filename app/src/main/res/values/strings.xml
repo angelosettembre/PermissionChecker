@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PermissionChecker</string>
+    <string name="monitoring_active"><u>Monitoraggio attivo</u></string>
+    <string name="monitoring_not_active"><u>Monitoraggio non attivo</u></string>
+    <string name="list_app"><u>Vai alla lista delle app</u></string>
+    <string name="init_monitoring"><u>Inizia il monitoraggio delle app</u></string>
+</resources>
