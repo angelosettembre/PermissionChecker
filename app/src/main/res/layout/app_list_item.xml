@@ -2,30 +2,35 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/appIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+    <RelativeLayout
+        android:id="@+id/firstRelative"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        />
+        android:layout_marginBottom="5dp">
 
-    <TextView
-        android:id="@+id/appName"
-        android:layout_marginTop="19dp"
-        android:layout_toRightOf="@id/appIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_marginTop="19dp"
+            android:layout_toRightOf="@id/appIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/toAppInfo"
-        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@id/firstRelative"
+        android:layout_marginTop="20dp"
         android:src="@drawable/go"
-        android:layout_marginLeft="80dp"
-        android:layout_toRightOf="@id/appName"
         android:layout_width="25dp"
         android:layout_height="25dp"
         />
-
 </RelativeLayout>

@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
-        android:background="#ffff">
+        android:background="#abd1d7">
 
         <ImageView
             android:id="@+id/rectimage"
@@ -35,5 +35,4 @@
             android:layout_height="wrap_content">
         </ListView>
     </RelativeLayout>
-
 </RelativeLayout>

@@ -3,40 +3,42 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/firstRelative"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/firstLinear"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp">
 
         <ImageView
             android:id="@+id/appIconDetails"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
             />
 
         <TextView
             android:layout_marginTop="20dp"
-            android:layout_toRightOf="@id/appIconDetails"
             android:id="@+id/appNameDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ImageView
-            android:layout_toRightOf="@id/appNameDetails"
-            android:layout_marginLeft="150dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/info"
-            android:layout_width="35dp"
-            android:layout_height="35dp" />
-    </RelativeLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:src="@drawable/info"
+        android:layout_toRightOf="@id/firstLinear"
+        android:layout_width="35dp"
+        android:layout_height="35dp" />
 
     <RelativeLayout
-        android:layout_below="@id/firstRelative"
+        android:layout_below="@id/firstLinear"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#abd1d7"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp">
 
         <ImageView
             android:id="@+id/rectimage"

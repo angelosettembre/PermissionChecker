@@ -14,9 +14,10 @@
     <LinearLayout
         android:id="@+id/firstLinear"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
 
-        <ImageView
+    <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/shieldicon"
@@ -36,16 +37,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/secondRelative"
+        android:id="@+id/secondLinear"
         android:layout_below="@id/firstLinear"
+        android:layout_marginTop="40dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
 
         <ImageView
             android:id="@+id/icon_lock_unlock"
-            android:layout_marginLeft="25dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/title"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/lock"
@@ -54,58 +54,68 @@
         <TextView
             android:id="@+id/monitoring"
             android:textSize="20dp"
+            android:layout_marginLeft="10dp"
             android:text="@string/monitoring_not_active"
             android:textColor="#ffff"
             android:textStyle="bold"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="45dp"
-            android:layout_below="@id/title"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
 
-
-    <ImageView
-        android:id="@+id/icon_listApp"
-        android:layout_marginTop="40dp"
-        android:layout_marginLeft="20dp"
-        android:layout_below="@id/icon_lock_unlock"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/listapp"
-        />
-
-    <TextView
-        android:id="@+id/text_listApp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="20dp"
-        android:textSize="20dp"
-        android:text="@string/list_app"
-        android:textColor="#ffff"
-        android:layout_below="@id/monitoring"
+    <LinearLayout
+        android:id="@+id/terzoLinear"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/secondLinear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:layout_centerHorizontal="true">
 
-    <TextView
-        android:id="@+id/text_initMonitoring"
-        android:layout_marginTop="30dp"
-        android:text="@string/init_monitoring"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textColor="#ffff"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/icon_listApp"
+        <ImageView
+            android:id="@+id/icon_listApp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/listapp"
+            />
+
+        <TextView
+            android:id="@+id/text_listApp"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
+            android:text="@string/list_app"
+            android:textColor="#ffff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/quartoLinear"
+        android:layout_below="@id/terzoLinear"
+        android:layout_marginTop="50dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/text_initMonitoring"
+            android:text="@string/init_monitoring"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#ffff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/start"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/text_initMonitoring"
+        android:layout_below="@id/quartoLinear"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:src="@drawable/play_icon"
@@ -113,9 +123,11 @@
 
     <ImageView
         android:id="@+id/stop"
+        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/text_initMonitoring"
+        android:layout_below="@id/quartoLinear"
         android:layout_width="80dp"
         android:layout_height="80dp"
         />
+
 </RelativeLayout>

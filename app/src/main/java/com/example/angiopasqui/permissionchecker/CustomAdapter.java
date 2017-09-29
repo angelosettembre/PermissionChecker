@@ -2,6 +2,8 @@ package com.example.angiopasqui.permissionchecker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +46,7 @@ public class CustomAdapter extends ArrayAdapter<App> {
 
         nameApp.setText(a.getName());
         iconApp.setImageDrawable(a.getIcon());
-        int id = getContext().getResources().getIdentifier("play_icon.png", "drawable", getContext().getPackageName());
-        go.setImageResource(id);
+        go.setBackgroundResource(R.drawable.go);
 
         return v;
     }
