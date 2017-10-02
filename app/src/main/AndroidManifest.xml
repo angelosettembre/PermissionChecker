@@ -17,10 +17,14 @@
         </activity>
         <activity
             android:name=".AppList"
-            android:label="AppList">
+            android:label="AppList"
+            android:parentActivityName=".MainActivity"
+            >
         </activity>
         <activity
-            android:name=".AppDetails">
+            android:name=".AppDetails"
+            android:parentActivityName=".AppList"
+            >
         </activity>
     </application>
 
