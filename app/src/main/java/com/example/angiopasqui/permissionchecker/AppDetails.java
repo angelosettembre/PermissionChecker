@@ -1,5 +1,6 @@
 package com.example.angiopasqui.permissionchecker;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -32,6 +33,9 @@ public class AppDetails extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_list_detail);
+        getActionBar().setDisplayShowHomeEnabled(true);
+        getActionBar().setDisplayUseLogoEnabled(true);
+
 
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.app_list_detail_item, R.id.permissionName);
 
@@ -44,9 +48,12 @@ public class AppDetails extends Activity {
         appName = i.getStringExtra("Nome app");
         bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
         nomeApp.setText(appName);
-        Drawable a = new BitmapDrawable(getResources(),bitmap);
-        iconaApp.setImageDrawable(a);
+        Drawable icon = new BitmapDrawable(getResources(),bitmap);
+        iconaApp.setImageDrawable(icon);
         packageName = i.getStringExtra("PACKAGE");
+        getActionBar().setLogo(icon);
+        getActionBar().setTitle(appName);
+
         Log.d("DEBUG","Pacchetto2"+packageName);
 
         //GET PERMISSIONS

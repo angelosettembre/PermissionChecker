@@ -3,6 +3,7 @@ package com.example.angiopasqui.permissionchecker;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -30,14 +31,14 @@ public class AppList extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_list);
+        PackageManager pm = getPackageManager();
 
         listView = (ListView) findViewById(R.id.listApp);
 
-        customAdapter = new CustomAdapter(this, R.layout.app_list_item, new ArrayList<App>());
+        customAdapter = new CustomAdapter(this, R.layout.app_list_item, new ArrayList<App>(),pm);
 
         listView.setAdapter(customAdapter);
 
-        PackageManager pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
 
         //GET APPS

@@ -1,5 +1,6 @@
 package com.example.angiopasqui.permissionchecker;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.Image;
@@ -22,8 +23,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Log.d("DEBUG","DASDSADADSADADA");
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setLogo(R.mipmap.ic_launcher);
+        actionBar.setDisplayUseLogoEnabled(true);
 
         icon_lock_unlcok = (ImageView) findViewById(R.id.icon_lock_unlock);
         textMonitoring = (TextView) findViewById(R.id.monitoring);

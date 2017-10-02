@@ -4,33 +4,51 @@
 
     <RelativeLayout
         android:id="@+id/firstRelative"
-        android:layout_width="330dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="5dp">
 
         <ImageView
             android:id="@+id/appIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             />
 
         <TextView
             android:id="@+id/appName"
-            android:layout_marginTop="19dp"
+            android:text="text"
+            android:textSize="15dp"
+            android:textStyle="normal"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/appIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-    <ImageView
+    <TextView
+        android:id="@+id/numPermissions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NUMERO"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+
+        />
+
+    <!--<ImageView
         android:id="@+id/toAppInfo"
-        android:layout_toRightOf="@id/firstRelative"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="29dp"
+        android:layout_marginRight="50dp"
+        android:layout_alignParentRight="true"
         android:src="@drawable/go"
+
         android:layout_width="25dp"
         android:layout_height="25dp"
-        />
+        />-->
 </RelativeLayout>
