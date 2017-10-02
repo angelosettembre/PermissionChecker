@@ -25,11 +25,9 @@ import android.widget.TextView;
 public class AppDetails extends Activity {
     ArrayAdapter<String> arrayAdapter;
     ListView listView;
-    private TextView nomeApp;
     private String appName;
     String packageName;
     private Bitmap bitmap;
-    private ImageView iconaApp;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -45,7 +43,6 @@ public class AppDetails extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_list_detail);
-
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayUseLogoEnabled(true);
@@ -55,15 +52,10 @@ public class AppDetails extends Activity {
 
         listView = (ListView) findViewById(R.id.appPermission);
 
-        nomeApp = (TextView) findViewById(R.id.appNameDetails);
-        iconaApp = (ImageView) findViewById(R.id.appIconDetails);
-
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
         bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
-        nomeApp.setText(appName);
         Drawable icon = new BitmapDrawable(getResources(),bitmap);
-        iconaApp.setImageDrawable(icon);
         packageName = i.getStringExtra("PACKAGE");
         getActionBar().setLogo(icon);
         getActionBar().setTitle(appName);

@@ -4,32 +4,15 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/firstLinear"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp">
 
-        <ImageView
-            android:id="@+id/appIconDetails"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            />
-
-        <TextView
-            android:layout_marginTop="20dp"
-            android:id="@+id/appNameDetails"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
     </LinearLayout>
-
-    <ImageView
-        android:layout_marginTop="10dp"
-        android:src="@drawable/info"
-        android:layout_toRightOf="@id/firstLinear"
-        android:layout_width="35dp"
-        android:layout_height="35dp" />
 
     <RelativeLayout
         android:layout_below="@id/firstLinear"
@@ -39,13 +22,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp">
-
-        <ImageView
-            android:id="@+id/rectimage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/rectangle"
-            />
 
         <ListView
             android:id="@+id/appPermission"
