@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 //
 
@@ -63,12 +64,12 @@ public class AppDetails extends Activity {
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
         bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
-        Drawable icon = new BitmapDrawable(getResources(),bitmap);
+        Drawable icon = new BitmapDrawable(getResources(), bitmap);
         packageName = i.getStringExtra("PACKAGE");
         getActionBar().setLogo(icon);
         getActionBar().setTitle(appName);
 
-        Log.d("DEBUG","Pacchetto2"+packageName);
+        Log.d("DEBUG", "Pacchetto2" + packageName);
 
         //GET PERMISSIONS
         /*PackageManager pm = getPackageManager();
@@ -86,54 +87,58 @@ public class AppDetails extends Activity {
             e.printStackTrace();
         }*/ //FUNZIONANTE
 
-        /*SOLUZIONE NON FUNZIONANTE
         PackageManager pm = getPackageManager();
+        PackageInfo pi;
+        PermissionInfo pgi;
         try {
-            PackageInfo pi;
-            pi = pm.getPackageInfo(packageName,PackageManager.GET_PERMISSIONS);
-            Log.d("DEBUG","Nome PACK: "+packageName);
-            String[] requestedPermissions = pi.requestedPermissions;
-            Log.d("DEBUG","Valore d: "+requestedPermissions.length);
-            for(int z=0;z<requestedPermissions.length;z++){
-                if(requestedPermissions != null) {
-                    String permName = requestedPermissions[z];
-                    Log.d("DEBUG", "Nomeee: " + permName);
-                    PermissionInfo pemInfo = pm.getPermissionInfo(permName, 0);
-                    PermissionGroupInfo permGroupInfo = pm.getPermissionGroupInfo(pemInfo.group, 0);
-                    Log.d("DEBUG", "Stampa 1: " + permName);
-                    Log.d("DEBUG", "Stampa 2: " + permGroupInfo.loadLabel(pm).toString());
-                    Log.d("DEBUG", "Stampa 3: " + pemInfo.loadLabel(pm).toString());
-                    Log.d("DEBUG", "Stampa 3: " + pemInfo.loadDescription(pm).toString());
+            pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+            String[] perm = pi.requestedPermissions;
+            List<String> permessiAll = new ArrayList<String>();
+            if (perm != null) {
+                for (String a : perm) {
+                    permessiAll.add(a);
                 }
             }
+
+            PermissionInfo[] permUser = pi.permissions;
+            List<String> permessiApp = new ArrayList<String>();
+            if (permUser != null) {
+                for (PermissionInfo s : permUser) {
+                    permessiApp.add(s.name);
+                }
+            }
+
+            for (int z = 0; z < permessiAll.size(); z++) {
+                String p = permessiAll.get(z);
+                for (int j = 0; j < permessiApp.size(); j++) {
+                    String a = permessiApp.get(j);
+                    if (p.equals(a)) {
+                        permessiAll.remove(p);
+                        break;
+                    }
+                }
+            }
+            for (String prova : permessiAll) {
+                System.out.println("PROVAAA 555: " + prova);
+                pgi = pm.getPermissionInfo(prova, 0);
+                System.out.println("PROVAAA 888: " + pgi.group);
+                if(pgi.group != null){
+                    arrayAdapter.add(pgi.group);
+                }
+            }
+                    /*
+                    //Log.d("test 11: ", perm[j]);
+                    pgi = pm.getPermissionInfo(p1, 0);
+                    System.out.println("PROVAAA: " + pgi.group);
+                    //Log.d("test 22: ",pgi.loadLabel(pm).toString());
+                    //Log.d("test 55: ",pgi.group.toString());
+                    //permGroupInfo = pm.getPermissionGroupInfo(pgi.group,0);
+                }*/
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-        }*/
-
-        PackageManager pm = getPackageManager();
-        List<PermissionInfo> permissions = new ArrayList<>();
-
-        List<PermissionGroupInfo> groupList = pm.getAllPermissionGroups(0);
-        groupList.add(null); // ungrouped permissions
-
-        for (PermissionGroupInfo permissionGroup : groupList) {
-            String name;
-            if(permissionGroup == null){
-                name = null;
-            }
-            else{
-                name = permissionGroup.name;
-            }
-            try {
-                permissions.addAll(pm.queryPermissionsByGroup(name, 0));
-            } catch (PackageManager.NameNotFoundException ignored) {
-            }
         }
 
-        for(PermissionInfo asd:permissions){
-            Log.d("DEBUG","Provolaaa: "+asd.name);
-            Log.d("DEBUG","Provolaaa 2: "+asd.group);
-        }
-        //listView.setAdapter(arrayAdapter);
+
+        listView.setAdapter(arrayAdapter);
     }
 }
