@@ -94,14 +94,24 @@ public class AppDetails extends Activity {
             pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
             String[] perm = pi.requestedPermissions;
 
-            for (int j = 0; j < perm.length; j++) {
-                System.out.println("PROVAAA 555: " + perm[j]);
-                pgi = pm.getPermissionInfo(perm[j], 0);
-                System.out.println("PROVAAA 888: " + pgi.group);
-                if(pgi.group != null){
-                    arrayAdapter.add(pgi.group);
+            if (perm != null) {
+                for (int j = 0; j < perm.length; j++) {
+                    try {
+                        System.out.println("PROVAAA 555: " + perm[j]);
+                        pgi = pm.getPermissionInfo(perm[j], 0);
+                        //System.out.println("PROVAAA 888: " + pgi.group);
+                        if (pgi.group != null) {
+                            arrayAdapter.add(pgi.name);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
                 }
             }
+
+
+
                     /*
                     //Log.d("test 11: ", perm[j]);
                     pgi = pm.getPermissionInfo(p1, 0);
