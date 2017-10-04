@@ -1,48 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/groupCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/row_down"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:src="@drawable/freccia_down" />
-
-        <TextView
-            android:id="@+id/groupName"
-            android:layout_toRightOf="@id/row_down"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:layout_marginBottom="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_below="@id/groupCategory"
+        android:id="@+id/containerList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:clickable="true"
+        >
+
+        <ListView
+            android:id="@+id/listGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp">
+
+        </ListView>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/containerListDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/containerList"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="#54e12e"
-        android:visibility="gone">
+        android:layout_marginTop="5dp"
+        android:visibility="invisible">
 
         <ListView
             android:id="@+id/appPermission"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:background="#afe4a0" />
+    </LinearLayout>
 
 </RelativeLayout>

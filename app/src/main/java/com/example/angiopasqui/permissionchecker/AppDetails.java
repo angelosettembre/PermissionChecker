@@ -1,28 +1,26 @@
 package com.example.angiopasqui.permissionchecker;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.security.Permission;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 //
 
@@ -32,11 +30,19 @@ import java.util.List;
  */
 
 public class AppDetails extends Activity {
-    ArrayAdapter<String> arrayAdapter;
-    ListView listView;
+    ArrayAdapter<String> arrayAdapterGroup;
+    PermissionAdapter arrayAdapterDescription;
+
+    ListView listGroups;
+    ListView listDescription;
     private String appName;
     String packageName;
     private Bitmap bitmap;
+
+    boolean cliccato=false;
+    RelativeLayout container;
+    LinearLayout containerListDescription;
+    ImageView freccia;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -52,14 +58,16 @@ public class AppDetails extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_list_detail);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayUseLogoEnabled(true);
 
+        listGroups = (ListView) findViewById(R.id.listGroup);
+        listDescription = (ListView) findViewById(R.id.appPermission);
 
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.app_list_detail_item, R.id.permissionName);
-
-        listView = (ListView) findViewById(R.id.appPermission);
+        arrayAdapterGroup = new ArrayAdapter<String>(this, R.layout.app_list_group_detail_item, R.id.groupName);
+        arrayAdapterDescription = new PermissionAdapter(this, R.layout.app_list_descrption_detail_item, new ArrayList<Permesso>());
 
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
@@ -99,20 +107,23 @@ public class AppDetails extends Activity {
                     try {
                         System.out.println("PROVAAA 555: " + perm[j]);
                         pgi = pm.getPermissionInfo(perm[j], 0);
+                        Permesso permesso = new Permesso();
+                        permesso.setName(pgi.name);
+                        permesso.setDescription(pgi.loadLabel(pm).toString());
                         //System.out.println("PROVAAA 888: " + pgi.group);
                         if (pgi.group != null) {
-                            arrayAdapter.add(pgi.name);
+                            arrayAdapterGroup.add(pgi.group);
+                        } else {
+                            arrayAdapterGroup.add(pgi.name);
                         }
+                        arrayAdapterDescription.add(permesso);
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                         continue;
                     }
                 }
             }
-
-
-
-                    /*
+             /*
                     //Log.d("test 11: ", perm[j]);
                     pgi = pm.getPermissionInfo(p1, 0);
                     System.out.println("PROVAAA: " + pgi.group);
@@ -124,7 +135,45 @@ public class AppDetails extends Activity {
             e.printStackTrace();
         }
 
+        /*container = (RelativeLayout) findViewById(R.id.groupCategory);
+        container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("DEBUG","CLICCATOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                freccia = (ImageView) view.findViewById(R.id.row);
+                freccia.setImageResource(R.drawable.freccia_up);
+                containerListDescription = (LinearLayout) view.findViewById(R.id.containerListDescription);
+                containerListDescription.setVisibility(View.VISIBLE);
+            }
+        });*/
 
-        listView.setAdapter(arrayAdapter);
+
+        listGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                freccia = (ImageView) view.findViewById(R.id.row);
+                if(!cliccato) {
+                    freccia.setImageResource(R.drawable.freccia_up);
+                    //container = (RelativeLayout) view.findViewById(R.id.containerList);
+                    //container.setVisibility(View.INVISIBLE);
+                    cliccato=true;
+                }
+                else {
+                    freccia.setImageResource(R.drawable.freccia_down);
+                    cliccato=false;
+                }
+
+            }
+        });
+
+        listGroups.setAdapter(arrayAdapterGroup);
+        listDescription.setAdapter(arrayAdapterDescription);
     }
+/*
+    public void showList(){
+        freccia = (ImageView) findViewById(R.id.row);
+        freccia.setImageResource(R.drawable.freccia_up);
+        container = (ListView) findViewById(R.id.appPermission);
+        container.setVisibility(View.INVISIBLE);
+    }*/
 }

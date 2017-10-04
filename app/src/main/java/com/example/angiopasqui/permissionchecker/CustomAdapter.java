@@ -48,7 +48,6 @@ public class CustomAdapter extends ArrayAdapter<App> {
         TextView nameApp;
         ImageView iconApp;
         TextView numtextPermission;
-        ImageView go;
 
         nameApp = (TextView) v.findViewById(R.id.appName);
         iconApp = (ImageView) v.findViewById(R.id.appIcon);
@@ -61,13 +60,10 @@ public class CustomAdapter extends ArrayAdapter<App> {
             e.printStackTrace();
         }
 
-        //go = (ImageView) v.findViewById(R.id.toAppInfo);
-
         nameApp.setText(a.getName());
         iconApp.setImageDrawable(a.getIcon());
         numtextPermission.setText(Integer.toString(numPermsissions));
         numPermsissions=0;
-        //go.setBackgroundResource(R.drawable.go);
 
         return v;
     }

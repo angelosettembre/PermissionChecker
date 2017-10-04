@@ -4,10 +4,20 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/permissionName"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="5dp"
-        android:id="@+id/permissionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="#0d8ef1"/>
+
+    <TextView
+        android:id="@+id/permissionDescription"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
