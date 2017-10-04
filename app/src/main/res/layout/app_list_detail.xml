@@ -3,25 +3,41 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/firstLinear"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
+    <RelativeLayout
+        android:id="@+id/groupCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/row_down"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/freccia_down" />
+
+        <TextView
+            android:id="@+id/groupName"
+            android:layout_toRightOf="@id/row_down"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:layout_marginBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
     <RelativeLayout
-        android:layout_below="@id/firstLinear"
+        android:layout_below="@id/groupCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#abd1d7"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+        android:background="#54e12e"
+        android:visibility="gone">
 
         <ListView
             android:id="@+id/appPermission"
