@@ -32,11 +32,12 @@ import java.util.List;
  */
 
 public class AppDetails extends Activity {
-    ArrayAdapter<String> arrayAdapter;
-    ListView listView;
+    PermissionAdapter arrayAdapterDescription;
+    ListView listPermission;
     private String appName;
     String packageName;
     private Bitmap bitmap;
+    private Drawable iconPermission;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -56,10 +57,9 @@ public class AppDetails extends Activity {
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayUseLogoEnabled(true);
 
+        arrayAdapterDescription = new PermissionAdapter(this, R.layout.app_list_detail_item, new ArrayList<Permesso>());
 
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.app_list_detail_item, R.id.permissionName);
-
-        listView = (ListView) findViewById(R.id.appPermission);
+        listPermission = (ListView) findViewById(R.id.appPermission);
 
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
@@ -72,36 +72,28 @@ public class AppDetails extends Activity {
         Log.d("DEBUG", "Pacchetto2" + packageName);
 
         //GET PERMISSIONS
-        /*PackageManager pm = getPackageManager();
-        PackageInfo pi;
-        try {
-            pi = pm.getPackageInfo(packageName,PackageManager.GET_PERMISSIONS);
-            String[] requestedPermissions = pi.requestedPermissions;
-            if(requestedPermissions != null) {
-                for (int j = 0; j < requestedPermissions.length; j++) {
-                    Log.d("test", requestedPermissions[j]);
-                    arrayAdapter.add(requestedPermissions[j]);
-                }
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }*/ //FUNZIONANTE
-
         PackageManager pm = getPackageManager();
         PackageInfo pi;
-        PermissionInfo pgi;
+        PermissionInfo pemInfo;
         try {
             pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
-            String[] perm = pi.requestedPermissions;
+            String[] requestedPermissions = pi.requestedPermissions;
 
-            if (perm != null) {
-                for (int j = 0; j < perm.length; j++) {
+            if (requestedPermissions != null) {
+                for (int j = 0; j < requestedPermissions.length; j++) {
                     try {
-                        System.out.println("PROVAAA 555: " + perm[j]);
-                        pgi = pm.getPermissionInfo(perm[j], 0);
-                        //System.out.println("PROVAAA 888: " + pgi.group);
-                        if (pgi.group != null) {
-                            arrayAdapter.add(pgi.name);
+                        Log.d("test", requestedPermissions[j]);
+                        pemInfo = pm.getPermissionInfo(requestedPermissions[j], 0);
+                        if(pemInfo.name.contains("android.permission") || pemInfo.name.contains("com.google") || pemInfo.name.contains("com.android.launcher")){
+                            Permesso permesso = new Permesso();
+                            permesso.setName(pemInfo.name);
+                            permesso.setDescription((String) pemInfo.loadDescription(pm));
+                            switch (pemInfo.name){
+                                case "android.permission.INTERNET":
+                                    iconPermission = getResources().getDrawable(R.drawable.access_network_state_icon);
+                                    permesso.setIcon(iconPermission);
+                            }
+                            arrayAdapterDescription.add(permesso);
                         }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
@@ -109,22 +101,10 @@ public class AppDetails extends Activity {
                     }
                 }
             }
-
-
-
-                    /*
-                    //Log.d("test 11: ", perm[j]);
-                    pgi = pm.getPermissionInfo(p1, 0);
-                    System.out.println("PROVAAA: " + pgi.group);
-                    //Log.d("test 22: ",pgi.loadLabel(pm).toString());
-                    //Log.d("test 55: ",pgi.group.toString());
-                    //permGroupInfo = pm.getPermissionGroupInfo(pgi.group,0);
-                }*/
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
-
-        listView.setAdapter(arrayAdapter);
+        listPermission.setAdapter(arrayAdapterDescription);
     }
 }

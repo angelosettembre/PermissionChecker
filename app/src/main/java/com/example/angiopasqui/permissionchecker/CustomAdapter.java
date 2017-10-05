@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Debug;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +30,8 @@ public class CustomAdapter extends ArrayAdapter<App> {
     private LayoutInflater inflater;
     private PackageManager packageManager;
     private PackageInfo pi;
-    static int numPermsissions;
+    private PermissionInfo pemInfo;
+    int numPermsissions;
 
     public CustomAdapter(Context context, int resourceId, List<App> objects, PackageManager pm) {
         super(context, resourceId, objects);
@@ -40,42 +43,52 @@ public class CustomAdapter extends ArrayAdapter<App> {
     @Override
     public View getView(int position, View v, ViewGroup parent) {
         if (v == null) {
-            Log.d("DEBUG","Inflating view");
+            Log.d("DEBUG", "Inflating view");
             v = inflater.inflate(R.layout.app_list_item, null);
         }
 
-        App a = getItem(position);
+        App app = getItem(position);
         TextView nameApp;
         ImageView iconApp;
         TextView numtextPermission;
-        ImageView go;
 
         nameApp = (TextView) v.findViewById(R.id.appName);
         iconApp = (ImageView) v.findViewById(R.id.appIcon);
-        numtextPermission =(TextView) v.findViewById(R.id.numPermissions);
+        numtextPermission = (TextView) v.findViewById(R.id.numPermissions);
 
         try {
-            pi = packageManager.getPackageInfo(a.getPackageName(),PackageManager.GET_PERMISSIONS);
-            countPermissions();
+            numPermsissions = countPermissions(app.getPackageName());
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
-        //go = (ImageView) v.findViewById(R.id.toAppInfo);
-
-        nameApp.setText(a.getName());
-        iconApp.setImageDrawable(a.getIcon());
+        nameApp.setText(app.getName());
+        iconApp.setImageDrawable(app.getIcon());
         numtextPermission.setText(Integer.toString(numPermsissions));
-        numPermsissions=0;
-        //go.setBackgroundResource(R.drawable.go);
+        numPermsissions = 0;
 
         return v;
     }
 
-    public void countPermissions(){
+    public int countPermissions(String namePack) throws PackageManager.NameNotFoundException {
+        int nPerm = 0;
+        pi = packageManager.getPackageInfo(namePack, PackageManager.GET_PERMISSIONS);
         String[] requestedPermissions = pi.requestedPermissions;
-        if(requestedPermissions!=null)
-            numPermsissions = requestedPermissions.length;
+
+        if (requestedPermissions != null) {
+            for (int j = 0; j < requestedPermissions.length; j++) {
+                try {
+                    Log.d("test", requestedPermissions[j]);
+                    pemInfo = packageManager.getPermissionInfo(requestedPermissions[j], 0);
+                    if(pemInfo.name.contains("android.permission") || pemInfo.name.contains("com.google") || pemInfo.name.contains("com.android.launcher"))
+                        nPerm++;
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+            }
+        }
+        return nPerm;
     }
 
 }
