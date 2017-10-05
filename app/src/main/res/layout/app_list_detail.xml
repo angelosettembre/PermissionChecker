@@ -8,35 +8,25 @@
         android:id="@+id/containerList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        >
+        android:clickable="true">
 
         <ListView
             android:id="@+id/listGroup"
             android:layout_width="wrap_content"
             android:layout_height="50dp">
-
         </ListView>
 
     </RelativeLayout>
 
-
-    <LinearLayout
-        android:id="@+id/containerListDescription"
+    <ListView
+        android:id="@+id/appPermission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/containerList"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:visibility="invisible">
-
-        <ListView
-            android:id="@+id/appPermission"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#afe4a0" />
-    </LinearLayout>
+        android:background="#afe4a0"
+        android:visibility="invisible" />
 
 </RelativeLayout>

@@ -40,8 +40,7 @@ public class AppDetails extends Activity {
     private Bitmap bitmap;
 
     boolean cliccato=false;
-    RelativeLayout container;
-    LinearLayout containerListDescription;
+    ListView container;
     ImageView freccia;
 
     @Override
@@ -109,14 +108,20 @@ public class AppDetails extends Activity {
                         pgi = pm.getPermissionInfo(perm[j], 0);
                         Permesso permesso = new Permesso();
                         permesso.setName(pgi.name);
+                        System.out.println("PROVAAA 999: " + permesso.getName());
+                        System.out.println("PROVAAA 1010: " + pgi.group);
                         permesso.setDescription(pgi.loadLabel(pm).toString());
                         //System.out.println("PROVAAA 888: " + pgi.group);
                         if (pgi.group != null) {
                             arrayAdapterGroup.add(pgi.group);
-                        } else {
-                            arrayAdapterGroup.add(pgi.name);
+
+
+
+                            arrayAdapterDescription.add(permesso);
+                        //} else {
+                            //arrayAdapterGroup.add(pgi.name);
                         }
-                        arrayAdapterDescription.add(permesso);
+                        //arrayAdapterDescription.add(permesso);
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                         continue;
@@ -135,31 +140,22 @@ public class AppDetails extends Activity {
             e.printStackTrace();
         }
 
-        /*container = (RelativeLayout) findViewById(R.id.groupCategory);
-        container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("DEBUG","CLICCATOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-                freccia = (ImageView) view.findViewById(R.id.row);
-                freccia.setImageResource(R.drawable.freccia_up);
-                containerListDescription = (LinearLayout) view.findViewById(R.id.containerListDescription);
-                containerListDescription.setVisibility(View.VISIBLE);
-            }
-        });*/
-
-
         listGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 freccia = (ImageView) view.findViewById(R.id.row);
+                container = (ListView) findViewById(R.id.appPermission);
+                System.out.println("VAIIIII: "+container.isShown());
                 if(!cliccato) {
                     freccia.setImageResource(R.drawable.freccia_up);
-                    //container = (RelativeLayout) view.findViewById(R.id.containerList);
-                    //container.setVisibility(View.INVISIBLE);
+                    container.setVisibility(View.VISIBLE);
+                    System.out.println("VAIIIII: 2222"+container.isShown());
                     cliccato=true;
                 }
                 else {
                     freccia.setImageResource(R.drawable.freccia_down);
+                    container.setVisibility(View.INVISIBLE);
+                    System.out.println("VAIIIII: 3333"+container.isShown());
                     cliccato=false;
                 }
 
@@ -169,11 +165,4 @@ public class AppDetails extends Activity {
         listGroups.setAdapter(arrayAdapterGroup);
         listDescription.setAdapter(arrayAdapterDescription);
     }
-/*
-    public void showList(){
-        freccia = (ImageView) findViewById(R.id.row);
-        freccia.setImageResource(R.drawable.freccia_up);
-        container = (ListView) findViewById(R.id.appPermission);
-        container.setVisibility(View.INVISIBLE);
-    }*/
 }
