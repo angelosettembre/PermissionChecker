@@ -38,6 +38,15 @@ public class Permesso implements Serializable {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "Permesso{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", icon=" + icon +
+                '}';
+    }
+
     public Drawable getIcon() {
         return icon;
     }

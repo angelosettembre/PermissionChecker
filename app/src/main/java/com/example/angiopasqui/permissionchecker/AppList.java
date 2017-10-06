@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ import java.util.List;
 
 public class AppList extends Activity {
     public ListView listView;
+    ArrayList<App> appList;
     CustomAdapter customAdapter;
     App app;
     String packageName;
@@ -52,9 +54,7 @@ public class AppList extends Activity {
 
         listView = (ListView) findViewById(R.id.listApp);
 
-        customAdapter = new CustomAdapter(this, R.layout.app_list_item, new ArrayList<App>(),pm);
-
-        listView.setAdapter(customAdapter);
+        customAdapter = new CustomAdapter(this, R.layout.app_list_item, appList = new ArrayList<App>(),pm);
 
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
 
@@ -67,15 +67,20 @@ public class AppList extends Activity {
                 Log.d("DEBUG", "NOME APP" + app.getName());
                 app.setIcon(pm.getApplicationIcon(applicationInfo));
                 app.setPackageName(applicationInfo.packageName);
+                appList.add(app);
+                for (App s:appList){
+                    System.out.println("OKKKK: "+s.toString());
+                }
+                sortListByName();
+                for (App s:appList){
+                    System.out.println("DOPOOOO: "+s.toString());
+                }
+                removeDuplicate();
                 customAdapter.add(app);
             }
         }
 
-        /*List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
-        for (ApplicationInfo info : packages) {
-            Log.i("Info", "Installed package:" + info.packageName);
-        }*/
+        listView.setAdapter(customAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -95,4 +100,24 @@ public class AppList extends Activity {
         });
     }
 
+    public void sortListByName(){
+        Collections.sort(appList, new Comparator<App>() {
+            @Override
+            public int compare(App app, App t1) {
+                return app.getName().compareTo(t1.getName());
+            }
+        });
+    }
+
+    public void removeDuplicate(){
+        int count = appList.size();
+        for (int i = 0; i < count; i++)
+        {
+            if(i+1<count && appList.get(i).getName().equalsIgnoreCase(appList.get(i+1).getName())){
+                appList.remove(i);
+                i--;
+                count--;
+            }
+        }
+    }
 }
