@@ -70,7 +70,7 @@ public class AppDetails extends Activity {
         getActionBar().setLogo(icon);
         getActionBar().setTitle(appName);
 
-        Log.d("DEBUG", "Pacchetto2" + packageName);
+        Log.d("DEBUG", "Pacchetto 2" + packageName);
 
         //GET PERMISSIONS
         PackageManager pm = getPackageManager();
