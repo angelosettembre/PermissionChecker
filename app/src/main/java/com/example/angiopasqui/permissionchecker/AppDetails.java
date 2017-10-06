@@ -1,8 +1,6 @@
 package com.example.angiopasqui.permissionchecker;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,18 +10,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.security.Permission;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 //
 
 
@@ -111,11 +102,6 @@ public class AppDetails extends Activity {
                             Drawable icona = pm.getResourcesForApplication("android").getDrawable(groupInfo.icon);
                             permesso.setIcon(icona);
 
-                           /* switch (pemInfo.name) {
-                                case "android.permission.INTERNET":
-                                    iconPermission = getResources().getDrawable(R.drawable.access_network_state_icon);
-                                    //permesso.setIcon(iconPermission);
-                            }*/
                             arrayAdapterDescription.add(permesso);
                             scanArray(arrayAdapterDescription);
                             check=false;
@@ -125,6 +111,142 @@ public class AppDetails extends Activity {
                         e.printStackTrace();
                         System.out.println("ECCEZIONEEEEE");
                         if(check){
+                            switch (pemInfo.name) {
+                                case "android.permission.INTERNET":
+                                    iconPermission = getResources().getDrawable(R.drawable.internet_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.BLUETOOTH":
+                                    iconPermission = getResources().getDrawable(R.drawable.bluetooth_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.google.android.c2dm.permission.RECEIVE":
+                                    iconPermission = getResources().getDrawable(R.drawable.receive_wap_push_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.google.android.providers.gsf.permission.READ_GSERVICES":
+                                    iconPermission = getResources().getDrawable(R.drawable.gs_service);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.MODIFY_AUDIO_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.modify_audio_settings_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.ACCESS_NETWORK_STATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.access_network_state_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.ACCESS_WIFI_STATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.access_wifi_state_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.WAKE_LOCK":
+                                    iconPermission = getResources().getDrawable(R.drawable.wake_lock);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.MANAGE_ACCOUNTS":
+                                    iconPermission = getResources().getDrawable(R.drawable.manage_account);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.READ_PROFILE":
+                                    iconPermission = getResources().getDrawable(R.drawable.read_profile_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.WRITE_SYNC_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.sync);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.READ_SYNC_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.read_sync_settings_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.AUTHENTICATE_ACCOUNTS":
+                                    iconPermission = getResources().getDrawable(R.drawable.authenticate_accounts_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.VIBRATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.vibrate_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.SYSTEM_ALERT_WINDOW":
+                                    iconPermission = getResources().getDrawable(R.drawable.alert);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.RECEIVE_BOOT_COMPLETED":
+                                    iconPermission = getResources().getDrawable(R.drawable.receive_boot_completed_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.android.launcher.permission.INSTALL_SHORTCUT":
+                                    iconPermission = getResources().getDrawable(R.drawable.install_shortcut_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.android.launcher.permission.UNINSTALL_SHORTCUT":
+                                    iconPermission = getResources().getDrawable(R.drawable.uninstall_shortcut_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.CHANGE_WIFI_STATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.access_wifi_state_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.NFC":
+                                    iconPermission = getResources().getDrawable(R.drawable.nfc_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.READ_SYNC_STATS":
+                                    iconPermission = getResources().getDrawable(R.drawable.stats);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.WRITE_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.write_sett);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.GET_TASKS":
+                                    iconPermission = getResources().getDrawable(R.drawable.task);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.GET_PACKAGE_SIZE":
+                                    iconPermission = getResources().getDrawable(R.drawable.get_package_size_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.BROADCAST_STICKY":
+                                    iconPermission = getResources().getDrawable(R.drawable.broadcast_sticky_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.CHANGE_NETWORK_STATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.change_network_state_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.EXPAND_STATUS_BAR":
+                                    iconPermission = getResources().getDrawable(R.drawable.expand_status_bar_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.BLUETOOTH_ADMIN":
+                                    iconPermission = getResources().getDrawable(R.drawable.bluetooth_admin_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.USE_CREDENTIALS":
+                                    iconPermission = getResources().getDrawable(R.drawable.use_credentials_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.REQUEST_INSTALL_PACKAGES":
+                                    iconPermission = getResources().getDrawable(R.drawable.request_install_packages_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.WRITE_SMS":
+                                    iconPermission = getResources().getDrawable(R.drawable.write_sms_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.CHANGE_WIFI_MULTICAST_STATE":
+                                    iconPermission = getResources().getDrawable(R.drawable.change_wifi_multicast_state_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.KILL_BACKGROUND_PROCESSES":
+                                    iconPermission = getResources().getDrawable(R.drawable.kill_background_processes_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+
+
+                            }
                             arrayAdapterDescription.add(permesso);
                             scanArray(arrayAdapterDescription);
                         }
