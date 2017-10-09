@@ -41,5 +41,78 @@
             android:layout_alignLeft="@+id/namePermission"
             android:layout_height="wrap_content"
             android:layout_below="@+id/namePermission"/>
+
+        <LinearLayout
+            android:id="@+id/containerAllowDeny"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/descriptionPermission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/allowButton"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/allow"
+                android:clickable="true"
+                android:onClick="allowPermission"
+                />
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONSENTI"
+                android:layout_toRightOf="@id/allowButton"
+                />
+
+            <ImageView
+                android:id="@+id/denyButton"
+                android:layout_marginLeft="30dp"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/deny"
+                android:clickable="true"
+                />
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NEGA"
+                android:layout_toRightOf="@id/allowButton"
+                />
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/checkGRANT_DENIED"
+            android:layout_marginLeft="30dp"
+            android:layout_alignBottom="@id/containerAllowDeny"
+            android:layout_toRightOf="@id/containerAllowDeny"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/check"
+            android:onClick="openDialog"
+            />
+
+        <TextView
+            android:id="@+id/checkText"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@id/containerAllowDeny"
+            android:layout_toRightOf="@id/containerAllowDeny"
+            android:layout_height="wrap_content"
+            android:text="VERIFICA"
+            android:textStyle="bold"
+            android:onClick="openDialog"
+            />
     </RelativeLayout>
 </RelativeLayout>

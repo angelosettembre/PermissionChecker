@@ -1,6 +1,8 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,8 +13,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 //
@@ -23,6 +30,7 @@ import java.util.ArrayList;
  */
 
 public class AppDetails extends Activity {
+    PackageManager pm;
     PermissionAdapter arrayAdapterDescription;
     ListView listPermission;
     private String appName;
@@ -30,6 +38,9 @@ public class AppDetails extends Activity {
     private Bitmap bitmap;
     private Drawable iconPermission;
     int count = 0;
+    View v;
+    ImageView iconGrantedDenied;
+    TextView textGrantedDenied;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -53,6 +64,11 @@ public class AppDetails extends Activity {
 
         listPermission = (ListView) findViewById(R.id.appPermission);
 
+        v = getLayoutInflater().inflate(R.layout.app_list_detail_item,null);
+
+        /*iconGrantedDenied = (ImageView) v.findViewById(R.id.granted_denied);
+        textGrantedDenied = (TextView) v.findViewById(R.id.text_granted_denied);*/
+
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
         bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
@@ -64,7 +80,7 @@ public class AppDetails extends Activity {
         Log.d("DEBUG", "Pacchetto 2" + packageName);
 
         //GET PERMISSIONS
-        PackageManager pm = getPackageManager();
+        pm = getPackageManager();
         PackageInfo pi;
         PermissionInfo pemInfo = null;
 
@@ -80,6 +96,22 @@ public class AppDetails extends Activity {
 
             if (requestedPermissions != null) {
                 for (int j = 0; j < requestedPermissions.length; j++) {
+                    Log.d("test 888", requestedPermissions[j]);
+                    /*
+                    int g = pm.checkPermission(requestedPermissions[j],packageName);
+                    if(g == PackageManager.PERMISSION_GRANTED){
+                        System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
+                        iconGrantedDenied.setImageResource(R.drawable.granted);
+                        textGrantedDenied.setText("CONCESSO");
+                        System.out.println("VALIIII TESTOOO CONCESSO: "+textGrantedDenied.getText());
+                    }
+                    if(g == PackageManager.PERMISSION_DENIED){
+                        System.out.println("1234 PERMESSO NON CONCESSO!!!");
+                        iconGrantedDenied.setImageResource(R.drawable.denied);
+                        textGrantedDenied.setText("NEGATO");
+                        System.out.println("VALIIII TESTOOO NEGATO: "+textGrantedDenied.getText());
+                    }*/
+
                     try {
                         if (requestedPermissions[j].contains(("android.permission")) || requestedPermissions[j].contains("com.google") || requestedPermissions[j].contains("com.android.launcher")) {
                             permesso = new Permesso();
@@ -294,7 +326,28 @@ public class AppDetails extends Activity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
         listPermission.setAdapter(arrayAdapterDescription);
+
+    }
+
+    public void allowPermission(View v){
+        System.out.println("CLICCATOOOOOO !!!");
+    }
+
+    public void openDialog(View v){
+        System.out.println("CLICCATOOOOOO  22222!!!");
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.dialog_check,null));
+
+
+        builder.setMessage("Stai per ripartire da capo. Sei sicuro?")
+                .setPositiveButton("Ok", dialogClickListener)
+                .setNegativeButton("Annulla", dialogClickListener).show();
+        return;
     }
 }
