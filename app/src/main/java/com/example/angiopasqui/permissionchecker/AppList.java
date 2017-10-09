@@ -68,13 +68,7 @@ public class AppList extends Activity {
                 app.setIcon(pm.getApplicationIcon(applicationInfo));
                 app.setPackageName(applicationInfo.packageName);
                 appList.add(app);
-                for (App s:appList){
-                    System.out.println("OKKKK: "+s.toString());
-                }
                 sortListByName();
-                for (App s:appList){
-                    System.out.println("DOPOOOO: "+s.toString());
-                }
                 removeDuplicate();
                 customAdapter.add(app);
             }

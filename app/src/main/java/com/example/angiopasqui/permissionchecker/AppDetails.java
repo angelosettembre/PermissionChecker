@@ -29,7 +29,7 @@ public class AppDetails extends Activity {
     String packageName;
     private Bitmap bitmap;
     private Drawable iconPermission;
-    int count=0;
+    int count = 0;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -66,11 +66,11 @@ public class AppDetails extends Activity {
         //GET PERMISSIONS
         PackageManager pm = getPackageManager();
         PackageInfo pi;
-        PermissionInfo pemInfo=null;
+        PermissionInfo pemInfo = null;
 
         Permesso permesso = new Permesso();
 
-        boolean check=false;
+        boolean check = false;
 
         PermissionGroupInfo groupInfo;
 
@@ -90,27 +90,29 @@ public class AppDetails extends Activity {
 
                             check = true;
 
-                            permesso.setName(pemInfo.name);
-                            permesso.setDescription((String) pemInfo.loadDescription(pm));
+                            if (pemInfo.loadDescription(pm) == null) {
+                                //Do nothing
+                                System.out.println("CI ARRIVIII!!!");
+                            } else {
+                                permesso.setName(pemInfo.name);
+                                permesso.setDescription((String) pemInfo.loadDescription(pm));
+                                System.out.println("NOME PERMESSOOOOOOOO " + pemInfo.name);
 
+                                System.out.println("NOME GRUPPOOO " + pemInfo.group);
 
-                            System.out.println("NOME PERMESSOOOOOOOO " + pemInfo.name);
+                                groupInfo = pm.getPermissionGroupInfo(pemInfo.group, 0);
+                                Drawable icona = pm.getResourcesForApplication("android").getDrawable(groupInfo.icon);
+                                permesso.setIcon(icona);
 
-                            System.out.println("NOME GRUPPOOO " + pemInfo.group);
-
-                            groupInfo = pm.getPermissionGroupInfo(pemInfo.group, 0);
-                            Drawable icona = pm.getResourcesForApplication("android").getDrawable(groupInfo.icon);
-                            permesso.setIcon(icona);
-
-                            arrayAdapterDescription.add(permesso);
-                            scanArray(arrayAdapterDescription);
-                            check=false;
-                            System.out.println("CONTINUA DOPO ECCEZIONE");
+                                arrayAdapterDescription.add(permesso);
+                                check = false;
+                                System.out.println("CONTINUA DOPO ECCEZIONE");
+                            }
                         }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                         System.out.println("ECCEZIONEEEEE");
-                        if(check){
+                        if (check) {
                             switch (pemInfo.name) {
                                 case "android.permission.INTERNET":
                                     iconPermission = getResources().getDrawable(R.drawable.internet_icon);
@@ -244,33 +246,55 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.kill_background_processes_icon);
                                     permesso.setIcon(iconPermission);
                                     break;
-
-
+                                case "com.google.android.gm.permission.AUTO_SEND":
+                                    iconPermission = getResources().getDrawable(R.drawable.send_sms_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.google.android.gms.permission.ACTIVITY_RECOGNITION":
+                                    iconPermission = getResources().getDrawable(R.drawable.fitness);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.android.launcher.permission.READ_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.read_settings);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "com.android.launcher.permission.WRITE_SETTINGS":
+                                    iconPermission = getResources().getDrawable(R.drawable.write_settings);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.RESTART_PACKAGES":
+                                    iconPermission = getResources().getDrawable(R.drawable.application_close);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION":
+                                    iconPermission = getResources().getDrawable(R.drawable.download_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.DISABLE_KEYGUARD":
+                                    iconPermission = getResources().getDrawable(R.drawable.disable_keyguard_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.REORDER_TASKS":
+                                    iconPermission = getResources().getDrawable(R.drawable.reorder_tasks_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
+                                case "android.permission.SET_WALLPAPER":
+                                    iconPermission = getResources().getDrawable(R.drawable.set_wallpaper_icon);
+                                    permesso.setIcon(iconPermission);
+                                    break;
                             }
                             arrayAdapterDescription.add(permesso);
-                            scanArray(arrayAdapterDescription);
                         }
                         check = false;
 
                         continue;
                     }
-
-
                 }
-
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
         listPermission.setAdapter(arrayAdapterDescription);
-    }
-
-
-    public void scanArray(PermissionAdapter adapter){
-        count++;
-        for(int i=0; i<count; i++){
-            System.out.println("ARRAY "+arrayAdapterDescription.getItem(i));
-        }
     }
 }

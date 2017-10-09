@@ -80,8 +80,13 @@ public class CustomAdapter extends ArrayAdapter<App> {
                 try {
                     Log.d("test", requestedPermissions[j]);
                     pemInfo = packageManager.getPermissionInfo(requestedPermissions[j], 0);
-                    if(pemInfo.name.contains("android.permission") || pemInfo.name.contains("com.google") || pemInfo.name.contains("com.android.launcher"))
-                        nPerm++;
+                    if (pemInfo.loadDescription(packageManager) == null) {
+                        //Do nothing
+                        System.out.println("CI ARRIVIII!!! 22");
+                    } else {
+                        if (pemInfo.name.contains("android.permission") || pemInfo.name.contains("com.google") || pemInfo.name.contains("com.android.launcher"))
+                            nPerm++;
+                    }
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                     continue;
