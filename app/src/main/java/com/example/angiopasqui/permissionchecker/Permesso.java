@@ -13,13 +13,15 @@ public class Permesso implements Serializable {
     private String name;
     private String description;
     private Drawable icon;
+    private Drawable checkPermission;
 
     public Permesso(){}
 
-    public Permesso(String name, String description,Drawable icon) {
+    public Permesso(String name, String description,Drawable icon, Drawable checkPermission) {
         this.name = name;
         this.description = description;
         this.icon = icon;
+        this.checkPermission = checkPermission;
     }
 
     public String getName() {
@@ -53,6 +55,14 @@ public class Permesso implements Serializable {
 
     public void setIcon(Drawable icon) {
         this.icon = icon;
+    }
+
+    public Drawable getCheckPermission() {
+        return checkPermission;
+    }
+
+    public void setCheckPermission(Drawable checkPermission) {
+        this.checkPermission = checkPermission;
     }
 }
 

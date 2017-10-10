@@ -37,15 +37,18 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         ImageView iconPermission;
         TextView namePermission;
         TextView permissionDescription;
+        ImageView checkPermission;
 
         iconPermission = (ImageView) v.findViewById(R.id.iconPermssion);
         namePermission = (TextView) v.findViewById(R.id.namePermission);
         permissionDescription = (TextView) v.findViewById(R.id.descriptionPermission);
+        checkPermission = (ImageView) v.findViewById(R.id.checkGRANT_DENIED);
 
         iconPermission.setImageDrawable(perm.getIcon());
         namePermission.setText(perm.getName());
         permissionDescription.setText(perm.getDescription());
 
+        checkPermission.setImageDrawable(perm.getCheckPermission());
         return v;
     }
 }

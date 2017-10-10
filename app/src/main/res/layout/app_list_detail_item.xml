@@ -99,20 +99,7 @@
             android:layout_toRightOf="@id/containerAllowDeny"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/check"
-            android:onClick="openDialog"
             />
 
-        <TextView
-            android:id="@+id/checkText"
-            android:layout_width="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_below="@id/containerAllowDeny"
-            android:layout_toRightOf="@id/containerAllowDeny"
-            android:layout_height="wrap_content"
-            android:text="VERIFICA"
-            android:textStyle="bold"
-            android:onClick="openDialog"
-            />
     </RelativeLayout>
 </RelativeLayout>
