@@ -829,6 +829,7 @@ public class AppDetails extends Activity {
     }
 
     public void allowPermission(View v){
-        System.out.println("CLICCATOOOOOO !!!");
+        Toast.makeText(AppDetails.this, "CLICCATO!",
+                Toast.LENGTH_LONG).show();
     }
 }
