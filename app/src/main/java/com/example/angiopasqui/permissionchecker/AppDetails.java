@@ -1,8 +1,7 @@
 package com.example.angiopasqui.permissionchecker;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,17 +11,14 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-//
 
 
 /**
@@ -828,8 +824,23 @@ public class AppDetails extends Activity {
 
     }
 
-    public void allowPermission(View v){
+    public void allowPermission(View v) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Toast.makeText(AppDetails.this, "CLICCATO!",
                 Toast.LENGTH_LONG).show();
+        Class<?> myClass = Class.forName(packageName);
+        System.out.println("ASDDDDA : "+myClass.getName());
+        Activity act = (Activity) myClass.newInstance();
+        ArrayList<String> arrPerm = new ArrayList<>();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            arrPerm.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            arrPerm.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if(!arrPerm.isEmpty()) {
+            String[] permissions = new String[arrPerm.size()];
+            permissions = arrPerm.toArray(permissions);
+            ActivityCompat.requestPermissions(act, permissions, 1);
+        }
     }
 }
