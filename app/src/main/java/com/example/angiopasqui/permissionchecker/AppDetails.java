@@ -1,8 +1,8 @@
 package com.example.angiopasqui.permissionchecker;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
@@ -10,15 +10,26 @@ import android.content.pm.PermissionInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,6 +46,24 @@ public class AppDetails extends Activity {
     private Drawable iconPermission;
     static int permissionControl;
     static int permControl;
+
+    private String path = "/storage/emulated/0/Android/data/com.example.angiopasqui.permissionchecker/files/";                                     //PERCORSO
+    private String pathBackup = (this.path + "backup/");                                            // /sdcard/at.plop.PermissionRemover/backup backup del vecchio apk;
+    private String pathKey = (this.path + "key/");                                                  // /sdcard/at.plop.PermissionRemover/key dove si trovano i file per la firma dell'apk
+    private String pathNew = (this.path + "new/");                                                  // /sdcard/at.plop.PermissionRemover/new CREARE apk modificato;
+    private String pathTmp = (this.path + "tmp/");                                                  // /sdcard/at.plop.PermissionRemover/tmp
+    private String apkfile;
+    private XMLFile xmlfile;
+    private boolean update;
+    protected Handler _taskHandler1 = new Handler();
+    private List<Permesso> permls;
+    private String newapkfile;
+    private int activityReturn = 0;
+    private static final Integer INSTALL = Integer.valueOf(1);
+    private static final Integer UNINSTALL = Integer.valueOf(2);
+    private SSL ssl;
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -67,6 +96,21 @@ public class AppDetails extends Activity {
         getActionBar().setTitle(appName);
 
         Log.d("DEBUG", "Pacchetto 2" + packageName);
+
+        //PARTE NUOVA
+        pm = getPackageManager();
+        List<ApplicationInfo> apps = pm.getInstalledApplications(0);
+        for(ApplicationInfo packInfo: apps){
+            if((packInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) {
+                boolean s = new File(packInfo.sourceDir).canRead();
+                System.out.println("COSSSSSSS: "+s);
+                System.out.println("ABSAAA W W A : "+packInfo.dataDir);
+                System.out.println("NOMMMEEEE: "+packInfo.packageName);
+                System.out.println("APK DIRECTORYYY "+packInfo.sourceDir);
+            }
+        }
+
+
 
         //GET PERMISSIONS
         pm = getPackageManager();
@@ -825,22 +869,204 @@ public class AppDetails extends Activity {
     }
 
     public void allowPermission(View v) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Toast.makeText(AppDetails.this, "CLICCATO!",
-                Toast.LENGTH_LONG).show();
-        Class<?> myClass = Class.forName(packageName);
-        System.out.println("ASDDDDA : "+myClass.getName());
-        Activity act = (Activity) myClass.newInstance();
-        ArrayList<String> arrPerm = new ArrayList<>();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            arrPerm.add(Manifest.permission.READ_PHONE_STATE);
+
+        AppDetails.this.StartUpdateAPK();
+    }
+
+    private void StartUpdateAPK() {                                                                 //Avvio UpdateApk con Thread
+        this.update = true;
+        this._taskHandler1.post(new Runnable() {                                                            //CREAZIONE PROCESSO
+            public void run() {
+                if (AppDetails.this.update) {
+                    AppDetails.this.update = false;
+                    AppDetails.this._taskHandler1.post(this);
+                    return;
+                }
+                AppDetails.this.UpdateAPK();                                                  //!!!!!AVVIOOOO!!!!!!!!!!
+            }
+        });
+    }
+
+    private void UpdateAPK() {                                                      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!AVVIOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        RWFile rwfile = new RWFile();                                               //CLASSE PER LETTURA,SCRITTURA,GENERAZIONE,COPIA DI UN FILE
+        SSL ssl = new SSL(this.pathKey);                                            //Percorso delle chiavi
+        System.out.println("VAlllllll: "+ssl.CertAvailable());
+        if (ssl.CertAvailable()) {                                                  //Se il certificato è disponibile
+            System.out.println("Entriiii??");
+            new File(this.pathTmp).mkdirs();
+            System.out.println("DIRECTORY Tmp CREATA:  ");
+            new Unzip().Unzip("/data/app/ApiDemos/ApiDemos.apk", this.pathTmp, "AndroidManifest.xml").booleanValue();
+            System.out.println("TUTTO APPOSTOOOOOOO");
+
+            this.xmlfile = new XMLFile(this.pathTmp + "AndroidManifest.xml");
+            System.out.println("XMLLLLL: "+xmlfile.toString());
+            this.permls = this.xmlfile.GetPermisionList();                                              //Ritorna la lista dei permessi
+
+            for (int i = 0; i < this.permls.size(); i++) {
+                System.out.println("HAI FATTO????: ");
+                if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
+                    this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
+                    System.out.println("okkkkk????: ");
+                }
+            }
+            //System.out.println("QUANTOOOOOO: 222 "+this.appName.substring(0,31));
+            if (this.appName.length() > 7 ) {
+                new File(this.pathBackup).mkdirs();                                                                //CREA LA DIRECTORY DI BACKUP
+                System.out.println("CREAZIONEEE: "+this.appName);
+                try {
+                    rwfile.CopyFile(this.apkfile, this.pathBackup + rwfile.GenFilename(this.apkfile, this.pathBackup, ""));         //Copia del file "apk" originale nella directory del backup
+                } catch (Exception e) {
+                }
+            }
+            if (new Unzip().Unzip(this.apkfile, this.pathTmp).booleanValue()) {                             //Se il valore è true
+                new File(this.pathTmp + "AndroidManifest.xml").delete();                                    //Cancella la directory temp con il Manifest
+                if (this.xmlfile.WriteFile(this.pathTmp + "AndroidManifest.xml").booleanValue()) {          //Se RWFile ha effettuato la scrittura del file
+                    new UpdateSHAFiles(this.pathTmp, getPackageInfo().versionName, getString(R.string.app_name)).Update();          //versioName -> il nome della versione del pacchetto; getString() = "Nome App"
+                    ssl.SignIt();                                                                   //Chiamata a metodo di SSL.java
+                    new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
+                    String newfilename = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new");                     //NUOVO NOME DEL FILE
+                    new Compress(this.pathTmp, new DirectoryFiles(this.pathTmp).GetOnlyFiles(), newfilename).zip();
+                    RemoveTempDir();
+                    this.newapkfile = newfilename;
+                    String packageName = GetPackageName(this.apkfile);
+                    if (packageName.equals("") || ssl.TestCert(getPackageManager(), packageName)) {
+                        InstallPackage(this.newapkfile);                                                                //INSTALLAZIONE PACCHETTO
+                        finish();                                                                                       //SI CHIUDE L'ACTIVITY
+                        return;
+                    } else if (true) {
+                        Toast.makeText(getApplicationContext(), "This app must be uninstalled before it can be installed.", Toast.LENGTH_LONG).show();
+                        UninstallPackage(this.apkfile);                                                                 //DISINSTALLAZIONE PACCHETTO
+                        return;
+                    } else {
+                        InstallPackage(this.newapkfile);
+                        finish();                                                                                       //SI CHIUDE L'ACTIVITY
+                        return;
+                    }
+                }
+                Toast.makeText(getApplicationContext(), "Error: unable to write file", Toast.LENGTH_LONG).show();
+                RemoveTempDir();
+                finish();                                                                                               //SI CHIUDE L'ACTIVITY
+                return;
+            }
+            Toast.makeText(getApplicationContext(), "Error: unable to write to /sdcard", Toast.LENGTH_LONG).show();
+            finish();                                                                                                   //SI CHIUDE L'ACTIVITY
+            return;
         }
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            arrPerm.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        //new DownloadCert(this, this.pathKey, this).show();                                                              //SCARICA CERTIFICATO
+        else {
+            this.ssl = new SSL(this.pathKey);                                          //mDir: path dove si trova la chiave
+
+            try {
+                InputStream inputStream = getAssets().open("testkey.pk8");
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                String text = "";
+
+                File file = new File(getExternalFilesDir("key"), "testkey.pk8");
+                file.createNewFile();
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+
+                while ((line = br.readLine()) != null) {
+                    text += line.toString();
+                    text += '\n';
+                }
+                bw.write(text);
+                bw.close();
+                System.out.println("SADSDD" + text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            File f = new File(getExternalFilesDir("key"), "testkey.x509.pem");
+
+            try {
+                f.createNewFile();
+                BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
+                writer.write("-----BEGIN CERTIFICATE-----\n" +
+                        "MIIEqDCCA5CgAwIBAgIJAJNurL4H8gHfMA0GCSqGSIb3DQEBBQUAMIGUMQswCQYD\n" +
+                        "VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4g\n" +
+                        "VmlldzEQMA4GA1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UE\n" +
+                        "AxMHQW5kcm9pZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTAe\n" +
+                        "Fw0wODAyMjkwMTMzNDZaFw0zNTA3MTcwMTMzNDZaMIGUMQswCQYDVQQGEwJVUzET\n" +
+                        "MBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4G\n" +
+                        "A1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9p\n" +
+                        "ZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTCCASAwDQYJKoZI\n" +
+                        "hvcNAQEBBQADggENADCCAQgCggEBANaTGQTexgskse3HYuDZ2CU+Ps1s6x3i/waM\n" +
+                        "qOi8qM1r03hupwqnbOYOuw+ZNVn/2T53qUPn6D1LZLjk/qLT5lbx4meoG7+yMLV4\n" +
+                        "wgRDvkxyGLhG9SEVhvA4oU6Jwr44f46+z4/Kw9oe4zDJ6pPQp8PcSvNQIg1QCAcy\n" +
+                        "4ICXF+5qBTNZ5qaU7Cyz8oSgpGbIepTYOzEJOmc3Li9kEsBubULxWBjf/gOBzAzU\n" +
+                        "RNps3cO4JFgZSAGzJWQTT7/emMkod0jb9WdqVA2BVMi7yge54kdVMxHEa5r3b97s\n" +
+                        "zI5p58ii0I54JiCUP5lyfTwE/nKZHZnfm644oLIXf6MdW2r+6R8CAQOjgfwwgfkw\n" +
+                        "HQYDVR0OBBYEFEhZAFY9JyxGrhGGBaR0GawJyowRMIHJBgNVHSMEgcEwgb6AFEhZ\n" +
+                        "AFY9JyxGrhGGBaR0GawJyowRoYGapIGXMIGUMQswCQYDVQQGEwJVUzETMBEGA1UE\n" +
+                        "CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMH\n" +
+                        "QW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9pZDEiMCAG\n" +
+                        "CSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbYIJAJNurL4H8gHfMAwGA1Ud\n" +
+                        "EwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAHqvlozrUMRBBVEY0NqrrwFbinZa\n" +
+                        "J6cVosK0TyIUFf/azgMJWr+kLfcHCHJsIGnlw27drgQAvilFLAhLwn62oX6snb4Y\n" +
+                        "LCBOsVMR9FXYJLZW2+TcIkCRLXWG/oiVHQGo/rWuWkJgU134NDEFJCJGjDbiLCpe\n" +
+                        "+ZTWHdcwauTJ9pUbo8EvHRkU3cYfGmLaLfgn9gP+pWA7LFQNvXwBnDa6sppCccEX\n" +
+                        "31I828XzgXpJ4O+mDL1/dBd+ek8ZPUP0IgdyZm5MTYPhvVqGCHzzTy3sIeJFymwr\n" +
+                        "sBbmg2OAUNLEMO6nwmocSdN2ClirfxqCzJOLSDE4QyS9BAH6EhY6UFcOaE0=\n" +
+                        "-----END CERTIFICATE-----");
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("COSSAAAAAAA: " + getExternalFilesDir(null));
+            RestartUpdateAPK();
         }
-        if(!arrPerm.isEmpty()) {
-            String[] permissions = new String[arrPerm.size()];
-            permissions = arrPerm.toArray(permissions);
-            ActivityCompat.requestPermissions(act, permissions, 1);
+    }
+
+    private PackageInfo getPackageInfo() {
+        PackageInfo pi = null;
+        try {
+            pi = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
+        return pi;
+    }
+
+    private void RemoveTempDir() {                      //Rimuovi la directory temp
+        new DirectoryRemove("").RemoveDir(this.pathTmp);
+    }
+
+    private String GetPackageName(String file) {                        //RITORNA IL NOME DEL PACCHETTO (com.""."")
+        PackageManager pm = getPackageManager();
+        String packageName = pm.getPackageArchiveInfo(file, 0).packageName;
+        List<ApplicationInfo> appinfos = pm.getInstalledApplications(0);
+        for (int i = 0; i < appinfos.size(); i++) {
+            if (((ApplicationInfo) appinfos.get(i)).packageName.equals(packageName)) {
+                return packageName;
+            }
+        }
+        return "";
+    }
+
+    private void InstallPackage(String packagename) {
+        setResult(2);
+        this.activityReturn = INSTALL.intValue();
+        Intent intent = new Intent("android.intent.action.VIEW");                                   //LANCIA VIEW PER INSTALLARE IL PACCHETTO
+        intent.setDataAndType(Uri.fromFile(new File(packagename)), "application/vnd.android.package-archive");
+        startActivityForResult(intent, 0);
+    }
+
+    private void UninstallPackage(String packagename) {
+        setResult(2);
+        this.activityReturn = UNINSTALL.intValue();
+        startActivityForResult(new Intent("android.intent.action.DELETE", Uri.fromParts("package", getPackageManager().getPackageArchiveInfo(packagename, 0).packageName, null)), 0);
+    }       //LANCIA DELETE PER DISINSTALLARE IL PACCHETTO
+
+    public void NoDownload() {
+        Toast.makeText(getApplicationContext(), "Unable to create and sign the new APK file without the key and cert file.", Toast.LENGTH_LONG).show();
+        RemoveTempDir();
+        finish();
+    }
+
+    public void RestartUpdateAPK() {
+        StartUpdateAPK();
     }
 }

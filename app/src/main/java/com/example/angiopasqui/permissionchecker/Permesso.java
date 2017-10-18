@@ -15,13 +15,36 @@ public class Permesso implements Serializable {
     private Drawable icon;
     private Drawable checkPermission;
 
+    public int len;
+    String name_;
+    public int ofs;
+    public int stringID;
+    public boolean removed = false;
+    Boolean checked = Boolean.valueOf(false);
+
     public Permesso(){}
+
+    public Permesso(int stringID, String name_, int offset, int len) {
+        this.stringID = stringID;
+        SetName(name_);
+        this.ofs = offset;
+        this.len = len;
+    }
 
     public Permesso(String name, String description,Drawable icon, Drawable checkPermission) {
         this.name = name;
         this.description = description;
         this.icon = icon;
         this.checkPermission = checkPermission;
+    }
+
+
+    public Boolean GetChecked() {
+        return this.checked;
+    }
+
+    public void SetName(String s) {
+        this.name_ = s.substring(s.lastIndexOf(".") + 1);
     }
 
     public String getName() {
