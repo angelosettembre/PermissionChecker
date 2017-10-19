@@ -51,7 +51,7 @@ public class AppDetails extends Activity {
     private String pathBackup = (this.path + "backup/");                                            // /sdcard/at.plop.PermissionRemover/backup backup del vecchio apk;
     private String pathKey = (this.path + "key/");                                                  // /sdcard/at.plop.PermissionRemover/key dove si trovano i file per la firma dell'apk
     private String pathNew = (this.path + "new/");                                                  // /sdcard/at.plop.PermissionRemover/new CREARE apk modificato;
-    private String pathTmp = (this.path + "tmp/");                                                  // /sdcard/at.plop.PermissionRemover/tmp
+    private String pathTmp = "tmp/";                                                  // /sdcard/at.plop.PermissionRemover/tmp
     private String apkfile;
     private XMLFile xmlfile;
     private boolean update;
@@ -62,6 +62,8 @@ public class AppDetails extends Activity {
     private static final Integer INSTALL = Integer.valueOf(1);
     private static final Integer UNINSTALL = Integer.valueOf(2);
     private SSL ssl;
+    private File file;
+    private File f;
 
 
 
@@ -97,16 +99,89 @@ public class AppDetails extends Activity {
 
         Log.d("DEBUG", "Pacchetto 2" + packageName);
 
+
+        file = new File(getExternalFilesDir("key"), "testkey.pk8");
+        f = new File(getExternalFilesDir("key"), "testkey.x509.pem");
+
+        this.ssl = new SSL(this.pathKey);                                          //mDir: path dove si trova la chiave
+
+        if(!file.exists() && !f.exists()){
+            try {
+                InputStream inputStream = getAssets().open("testkey.pk8");
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                String text = "";
+                file.createNewFile();
+
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+
+                while ((line = br.readLine()) != null) {
+                    text += line.toString();
+                    text += '\n';
+                }
+                bw.write(text);
+                bw.close();
+                System.out.println("SADSDD" + text);
+
+                f.createNewFile();
+                BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
+                writer.write("-----BEGIN CERTIFICATE-----\n" +
+                        "MIIEqDCCA5CgAwIBAgIJAJNurL4H8gHfMA0GCSqGSIb3DQEBBQUAMIGUMQswCQYD\n" +
+                        "VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4g\n" +
+                        "VmlldzEQMA4GA1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UE\n" +
+                        "AxMHQW5kcm9pZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTAe\n" +
+                        "Fw0wODAyMjkwMTMzNDZaFw0zNTA3MTcwMTMzNDZaMIGUMQswCQYDVQQGEwJVUzET\n" +
+                        "MBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4G\n" +
+                        "A1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9p\n" +
+                        "ZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTCCASAwDQYJKoZI\n" +
+                        "hvcNAQEBBQADggENADCCAQgCggEBANaTGQTexgskse3HYuDZ2CU+Ps1s6x3i/waM\n" +
+                        "qOi8qM1r03hupwqnbOYOuw+ZNVn/2T53qUPn6D1LZLjk/qLT5lbx4meoG7+yMLV4\n" +
+                        "wgRDvkxyGLhG9SEVhvA4oU6Jwr44f46+z4/Kw9oe4zDJ6pPQp8PcSvNQIg1QCAcy\n" +
+                        "4ICXF+5qBTNZ5qaU7Cyz8oSgpGbIepTYOzEJOmc3Li9kEsBubULxWBjf/gOBzAzU\n" +
+                        "RNps3cO4JFgZSAGzJWQTT7/emMkod0jb9WdqVA2BVMi7yge54kdVMxHEa5r3b97s\n" +
+                        "zI5p58ii0I54JiCUP5lyfTwE/nKZHZnfm644oLIXf6MdW2r+6R8CAQOjgfwwgfkw\n" +
+                        "HQYDVR0OBBYEFEhZAFY9JyxGrhGGBaR0GawJyowRMIHJBgNVHSMEgcEwgb6AFEhZ\n" +
+                        "AFY9JyxGrhGGBaR0GawJyowRoYGapIGXMIGUMQswCQYDVQQGEwJVUzETMBEGA1UE\n" +
+                        "CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMH\n" +
+                        "QW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9pZDEiMCAG\n" +
+                        "CSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbYIJAJNurL4H8gHfMAwGA1Ud\n" +
+                        "EwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAHqvlozrUMRBBVEY0NqrrwFbinZa\n" +
+                        "J6cVosK0TyIUFf/azgMJWr+kLfcHCHJsIGnlw27drgQAvilFLAhLwn62oX6snb4Y\n" +
+                        "LCBOsVMR9FXYJLZW2+TcIkCRLXWG/oiVHQGo/rWuWkJgU134NDEFJCJGjDbiLCpe\n" +
+                        "+ZTWHdcwauTJ9pUbo8EvHRkU3cYfGmLaLfgn9gP+pWA7LFQNvXwBnDa6sppCccEX\n" +
+                        "31I828XzgXpJ4O+mDL1/dBd+ek8ZPUP0IgdyZm5MTYPhvVqGCHzzTy3sIeJFymwr\n" +
+                        "sBbmg2OAUNLEMO6nwmocSdN2ClirfxqCzJOLSDE4QyS9BAH6EhY6UFcOaE0=\n" +
+                        "-----END CERTIFICATE-----");
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("DIRECTORY Key CREATA:  ");
+
+            System.out.println("COSSAAAAAAA: " + getExternalFilesDir(null));
+        }
+
+
+        new File(getExternalFilesDir(this.pathTmp),"");
+        System.out.println("DIRECTORY Tmp CREATA:  ");
+
+
+
         //PARTE NUOVA
         pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
         for(ApplicationInfo packInfo: apps){
             if((packInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) {
-                boolean s = new File(packInfo.sourceDir).canRead();
-                System.out.println("COSSSSSSS: "+s);
-                System.out.println("ABSAAA W W A : "+packInfo.dataDir);
-                System.out.println("NOMMMEEEE: "+packInfo.packageName);
-                System.out.println("APK DIRECTORYYY "+packInfo.sourceDir);
+                if(packInfo.packageName.equals(packageName)){
+                    System.out.println("NOMMMEEEE: "+packInfo.packageName);
+                    System.out.println("APK DIRECTORYYY "+packInfo.sourceDir);
+                    boolean b = new Unzip().Unzip(packInfo.sourceDir, this.path +this.pathTmp, "AndroidManifest.xml").booleanValue();
+                    System.out.println("TUTTO APPOSTOOOOOOO"+b);
+                    this.xmlfile = new XMLFile(this.path +this.pathTmp + "AndroidManifest.xml");
+                    this.permls = this.xmlfile.GetPermisionList();                                      //LISTA PERMESSI PRESI DAL FILE MANIFEST DELL'apk
+                    System.out.println("LISTTAAAAA PERMMIEE:: "+permls);
+                    break;
+                }
             }
         }
 
@@ -893,15 +968,6 @@ public class AppDetails extends Activity {
         System.out.println("VAlllllll: "+ssl.CertAvailable());
         if (ssl.CertAvailable()) {                                                  //Se il certificato è disponibile
             System.out.println("Entriiii??");
-            new File(this.pathTmp).mkdirs();
-            System.out.println("DIRECTORY Tmp CREATA:  ");
-            new Unzip().Unzip("/data/app/ApiDemos/ApiDemos.apk", this.pathTmp, "AndroidManifest.xml").booleanValue();
-            System.out.println("TUTTO APPOSTOOOOOOO");
-
-            this.xmlfile = new XMLFile(this.pathTmp + "AndroidManifest.xml");
-            System.out.println("XMLLLLL: "+xmlfile.toString());
-            this.permls = this.xmlfile.GetPermisionList();                                              //Ritorna la lista dei permessi
-
             for (int i = 0; i < this.permls.size(); i++) {
                 System.out.println("HAI FATTO????: ");
                 if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
@@ -953,71 +1019,7 @@ public class AppDetails extends Activity {
             return;
         }
         //new DownloadCert(this, this.pathKey, this).show();                                                              //SCARICA CERTIFICATO
-        else {
-            this.ssl = new SSL(this.pathKey);                                          //mDir: path dove si trova la chiave
 
-            try {
-                InputStream inputStream = getAssets().open("testkey.pk8");
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                String text = "";
-
-                File file = new File(getExternalFilesDir("key"), "testkey.pk8");
-                file.createNewFile();
-                BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-
-                while ((line = br.readLine()) != null) {
-                    text += line.toString();
-                    text += '\n';
-                }
-                bw.write(text);
-                bw.close();
-                System.out.println("SADSDD" + text);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            File f = new File(getExternalFilesDir("key"), "testkey.x509.pem");
-
-            try {
-                f.createNewFile();
-                BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
-                writer.write("-----BEGIN CERTIFICATE-----\n" +
-                        "MIIEqDCCA5CgAwIBAgIJAJNurL4H8gHfMA0GCSqGSIb3DQEBBQUAMIGUMQswCQYD\n" +
-                        "VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4g\n" +
-                        "VmlldzEQMA4GA1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UE\n" +
-                        "AxMHQW5kcm9pZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTAe\n" +
-                        "Fw0wODAyMjkwMTMzNDZaFw0zNTA3MTcwMTMzNDZaMIGUMQswCQYDVQQGEwJVUzET\n" +
-                        "MBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4G\n" +
-                        "A1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9p\n" +
-                        "ZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTCCASAwDQYJKoZI\n" +
-                        "hvcNAQEBBQADggENADCCAQgCggEBANaTGQTexgskse3HYuDZ2CU+Ps1s6x3i/waM\n" +
-                        "qOi8qM1r03hupwqnbOYOuw+ZNVn/2T53qUPn6D1LZLjk/qLT5lbx4meoG7+yMLV4\n" +
-                        "wgRDvkxyGLhG9SEVhvA4oU6Jwr44f46+z4/Kw9oe4zDJ6pPQp8PcSvNQIg1QCAcy\n" +
-                        "4ICXF+5qBTNZ5qaU7Cyz8oSgpGbIepTYOzEJOmc3Li9kEsBubULxWBjf/gOBzAzU\n" +
-                        "RNps3cO4JFgZSAGzJWQTT7/emMkod0jb9WdqVA2BVMi7yge54kdVMxHEa5r3b97s\n" +
-                        "zI5p58ii0I54JiCUP5lyfTwE/nKZHZnfm644oLIXf6MdW2r+6R8CAQOjgfwwgfkw\n" +
-                        "HQYDVR0OBBYEFEhZAFY9JyxGrhGGBaR0GawJyowRMIHJBgNVHSMEgcEwgb6AFEhZ\n" +
-                        "AFY9JyxGrhGGBaR0GawJyowRoYGapIGXMIGUMQswCQYDVQQGEwJVUzETMBEGA1UE\n" +
-                        "CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMH\n" +
-                        "QW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9pZDEiMCAG\n" +
-                        "CSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbYIJAJNurL4H8gHfMAwGA1Ud\n" +
-                        "EwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAHqvlozrUMRBBVEY0NqrrwFbinZa\n" +
-                        "J6cVosK0TyIUFf/azgMJWr+kLfcHCHJsIGnlw27drgQAvilFLAhLwn62oX6snb4Y\n" +
-                        "LCBOsVMR9FXYJLZW2+TcIkCRLXWG/oiVHQGo/rWuWkJgU134NDEFJCJGjDbiLCpe\n" +
-                        "+ZTWHdcwauTJ9pUbo8EvHRkU3cYfGmLaLfgn9gP+pWA7LFQNvXwBnDa6sppCccEX\n" +
-                        "31I828XzgXpJ4O+mDL1/dBd+ek8ZPUP0IgdyZm5MTYPhvVqGCHzzTy3sIeJFymwr\n" +
-                        "sBbmg2OAUNLEMO6nwmocSdN2ClirfxqCzJOLSDE4QyS9BAH6EhY6UFcOaE0=\n" +
-                        "-----END CERTIFICATE-----");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("COSSAAAAAAA: " + getExternalFilesDir(null));
-            RestartUpdateAPK();
-        }
     }
 
     private PackageInfo getPackageInfo() {

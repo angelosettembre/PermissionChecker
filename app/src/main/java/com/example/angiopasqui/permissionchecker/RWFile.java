@@ -14,18 +14,19 @@ public class RWFile {
     }
 
     public byte[] ReadFile(File file) throws IOException {
-        System.out.println("QWEERRRR: 33333 "+file.toString());
-        RandomAccessFile f = new RandomAccessFile(file, "rw");                                       //APERTURA FILE CON LETTURA
+        RandomAccessFile f = new RandomAccessFile(file, "r");                                       //APERTURA FILE CON LETTURA
         System.out.println("QWEERRRR: 4444 "+file.toString());
         try {
-            System.out.println("QWEERRRR: 777 "+f.length());
             long longlength = f.length();                                                           //Lunghezza del file
             int length = (int) longlength;
+            System.out.println("QWEERRRR: 878 "+length);
             if (((long) length) != longlength) {
                 throw new IOException("File size >= 2 GB");
             }
             byte[] data = new byte[length];
             f.readFully(data);                              //Lettura della lunghezza di questo file nell'array di byte "data"
+            String sdasd = new String(data);
+            System.out.println("QWEERRRR: 11111 "+sdasd);
             System.out.println("QWEERRRR: 5555 "+data.length);
             return data;                                    //Ritorna array di byte con lunghezza "length"
         } finally {

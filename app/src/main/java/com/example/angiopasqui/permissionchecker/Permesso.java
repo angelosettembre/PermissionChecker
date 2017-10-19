@@ -43,6 +43,10 @@ public class Permesso implements Serializable {
         return this.checked;
     }
 
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
+    }
+
     public void SetName(String s) {
         this.name_ = s.substring(s.lastIndexOf(".") + 1);
     }
@@ -66,9 +70,10 @@ public class Permesso implements Serializable {
     @Override
     public String toString() {
         return "Permesso{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", icon=" + icon +
+                "len=" + len +
+                ", name_='" + name_ + '\'' +
+                ", ofs=" + ofs +
+                ", stringID=" + stringID +
                 '}';
     }
 

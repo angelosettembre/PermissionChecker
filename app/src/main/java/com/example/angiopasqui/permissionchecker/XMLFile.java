@@ -29,25 +29,36 @@ public class XMLFile {
             this.filesize = this.data.length;                               //Lunghezza dell'array
             this.log = Integer.toString(this.filesize);
             int strings = Conv(this.data, 16, 4);                           //Shift a sinistra
-            this.string = new String[strings];
+            System.out.println("Stringssss "+strings);
+            this.string = new String[strings];                              //Array di stringhe
             for (int i = 0; i < strings; i++) {
                 this.string[i] = "";
             }
             int ofs = Conv(this.data, 28, 4) + 8;
+            System.out.println("Ofsss "+ofs);
             int stringend = Conv(this.data, 12, 4);
+            System.out.println("StringEn d"+stringend);
             int stringid = 0;
             while (ofs < stringend) {
                 next = Conv(this.data, ofs, 2) * 2;
+                System.out.println("Next "+next);
                 this.string[stringid] = LoadString(this.data, ofs);
+                System.out.println("StringIDDDD  "+this.string[stringid]);
                 ofs += (next + 2) + 2;
+                System.out.println("Ofsss NUOVOOOO "+ofs);
                 stringid++;
                 if (stringid >= strings) {
                     break;
                 }
             }
+            System.out.println("USCITO DAL WHILEEEE");
             ofs = 8;
             while (ofs < this.filesize) {
                 next = Conv(this.data, ofs + 4, 4);
+
+                //System.out.println("DATA ARRAY  "+Arrays.toString(this.data));
+                //System.out.println("XML TAGGGGG "+Arrays.toString(this.XML_START_TAG));
+
                 if (Compare(this.data, ofs, this.XML_START_TAG, 4).booleanValue()) {
                     if (this.string[Conv(this.data, ofs + 20, 4)].equals("uses-permission")) {
                         int id = Conv(this.data, ofs + 44, 4);
@@ -71,6 +82,7 @@ public class XMLFile {
     private String LoadString(byte[] data, int ofs) {
         String ret = "";
         int len = Conv(data, ofs, 2) * 2;                               //Shift a sinistra
+        System.out.println("Lenn "+len);
         for (int i = 0; i < len; i += 2) {
             ret = new StringBuilder(String.valueOf(ret)).append((char) data[(ofs + i) + 2]).toString();
         }
@@ -79,6 +91,8 @@ public class XMLFile {
 
     private Boolean Compare(byte[] data, int ofs, byte[] data2, int len) {
         for (int i = 0; i < len; i++) {
+            //System.out.println("PRIMO DATAAA: "+data[ofs + i]);
+            //System.out.println("SECONDO DATAAA: "+data2[(len - 1) - i]);
             if (data[ofs + i] != data2[(len - 1) - i]) {
                 return Boolean.valueOf(false);
             }
@@ -86,9 +100,10 @@ public class XMLFile {
         return Boolean.valueOf(true);
     }
 
-    private int Conv(byte[] data, int ofs, int len) {
+    private int Conv(byte[] data, int ofs, int len) {                       //data = lunghezza Manifest; 16 ofs = offset ; 4 len = lunghezza
         int shift = 0;
         int ret = 0;
+        //System.out.println("WHATSSSSSS:::"+data[16]);
         for (int i = 0; i < len; i++) {
             ret += (data[ofs + i] & 255) << shift;                                  //Spostamento a sinistra di "(data[ofs + i] & 255))" di "shift" bit
             shift += 8;                                                             //Spostamento di 8 bit a sinistra -> data[ofs + i] & 255)00000000
