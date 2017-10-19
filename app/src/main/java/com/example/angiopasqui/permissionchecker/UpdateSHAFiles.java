@@ -24,6 +24,8 @@ public class UpdateSHAFiles {
     public void Update() {
         try {
             for (File ff : new File(this.basedir + "META-INF/").listFiles()) {          //listFiles() - > Restituisce una serie di percorsi astratti che indicano i file nella directory indicata da questo percorso astratto
+                System.out.println("SHAAAAAAaAAAAAAAAAA : "+ ff.getName());
+
                 if (ff.getName().endsWith(".RSA")) {                                    //Se il file i-esimo termina con .RSA
                     ff.renameTo(new File(this.basedir + "META-INF/CERT.RSA"));          //Rinominalo
                 }
@@ -45,6 +47,7 @@ public class UpdateSHAFiles {
         lines[0] = "";
         int i2;
         try {
+            System.out.println("IL FILE SHAAAA 1 : "+sha1file);
             sha1digest = filesha1.SHA1(sha1file);               //CODIFICA DEL FILE CON SHA1
         } catch (Exception e) {
             Log.e("sha1", "error");

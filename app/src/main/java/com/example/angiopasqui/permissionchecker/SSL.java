@@ -26,9 +26,7 @@ public class SSL {
     public SSL(String path) {
         this.path = path;
         this.privatekey = new StringBuilder(String.valueOf(path)).append("testkey.pk8").toString();
-        System.out.println("CHIAVEEEEE: "+privatekey);
         this.cert = new StringBuilder(String.valueOf(path)).append("testkey.x509.pem").toString();
-        System.out.println("CERTIFICATOOO: "+cert);
     }
 
     public boolean CertAvailable() {                                                    //Disponibilità certificato
@@ -42,6 +40,7 @@ public class SSL {
     public void SignIt() {                                                              //Metodo per la firma
         RWFile f = new RWFile();
         Sign();                                                                         //Chiamata a metodo nativo
+        System.out.println("FIRMA EFFETTUATAAAAAA");
         f.Delete("/sdcard/at.plop.PermissionRemover/tmp/testkey");                      //Cancellazione del file "testkey" dalla cartella /tmp
     }
 

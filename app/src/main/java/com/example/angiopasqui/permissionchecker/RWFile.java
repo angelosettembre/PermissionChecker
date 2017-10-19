@@ -25,8 +25,6 @@ public class RWFile {
             }
             byte[] data = new byte[length];
             f.readFully(data);                              //Lettura della lunghezza di questo file nell'array di byte "data"
-            String sdasd = new String(data);
-            System.out.println("QWEERRRR: 11111 "+sdasd);
             System.out.println("QWEERRRR: 5555 "+data.length);
             return data;                                    //Ritorna array di byte con lunghezza "length"
         } finally {
@@ -34,7 +32,7 @@ public class RWFile {
         }
     }
 
-    public Boolean WriteFile(String name, byte[] data) {
+    public Boolean WriteFile(String name, byte[] data) {                                    //Name = tmp/AndroidManifest.xml
         try {
             RandomAccessFile f = new RandomAccessFile(new File(name), "rw");                //APERTURA FILE CON SCRITTURA E LETTURA
             f.write(data);                                                                  //Scrive un byte "data"

@@ -29,23 +29,17 @@ public class XMLFile {
             this.filesize = this.data.length;                               //Lunghezza dell'array
             this.log = Integer.toString(this.filesize);
             int strings = Conv(this.data, 16, 4);                           //Shift a sinistra
-            System.out.println("Stringssss "+strings);
             this.string = new String[strings];                              //Array di stringhe
             for (int i = 0; i < strings; i++) {
                 this.string[i] = "";
             }
             int ofs = Conv(this.data, 28, 4) + 8;
-            System.out.println("Ofsss "+ofs);
             int stringend = Conv(this.data, 12, 4);
-            System.out.println("StringEn d"+stringend);
             int stringid = 0;
             while (ofs < stringend) {
                 next = Conv(this.data, ofs, 2) * 2;
-                System.out.println("Next "+next);
                 this.string[stringid] = LoadString(this.data, ofs);
-                System.out.println("StringIDDDD  "+this.string[stringid]);
                 ofs += (next + 2) + 2;
-                System.out.println("Ofsss NUOVOOOO "+ofs);
                 stringid++;
                 if (stringid >= strings) {
                     break;
@@ -75,14 +69,12 @@ public class XMLFile {
             this.log = Integer.toString(strings);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("CI ASDSDDDDDD"+e.getMessage());
         }
     }
 
     private String LoadString(byte[] data, int ofs) {
         String ret = "";
         int len = Conv(data, ofs, 2) * 2;                               //Shift a sinistra
-        System.out.println("Lenn "+len);
         for (int i = 0; i < len; i += 2) {
             ret = new StringBuilder(String.valueOf(ret)).append((char) data[(ofs + i) + 2]).toString();
         }

@@ -99,7 +99,7 @@ public class AppDetails extends Activity {
 
         Log.d("DEBUG", "Pacchetto 2" + packageName);
 
-
+        //CREAZIONE CHIAVI
         file = new File(getExternalFilesDir("key"), "testkey.pk8");
         f = new File(getExternalFilesDir("key"), "testkey.x509.pem");
 
@@ -161,19 +161,20 @@ public class AppDetails extends Activity {
             System.out.println("COSSAAAAAAA: " + getExternalFilesDir(null));
         }
 
-
+        //CREAZIONE CARTELLA TMP
         new File(getExternalFilesDir(this.pathTmp),"");
         System.out.println("DIRECTORY Tmp CREATA:  ");
 
 
 
-        //PARTE NUOVA
+        //ESTRAZIONE DEL FILE AndroidManifest.xml DAL FILE APK
         pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
         for(ApplicationInfo packInfo: apps){
             if((packInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) {
                 if(packInfo.packageName.equals(packageName)){
                     System.out.println("NOMMMEEEE: "+packInfo.packageName);
+                    apkfile = packInfo.sourceDir;
                     System.out.println("APK DIRECTORYYY "+packInfo.sourceDir);
                     boolean b = new Unzip().Unzip(packInfo.sourceDir, this.path +this.pathTmp, "AndroidManifest.xml").booleanValue();
                     System.out.println("TUTTO APPOSTOOOOOOO"+b);
@@ -944,7 +945,7 @@ public class AppDetails extends Activity {
     }
 
     public void allowPermission(View v) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-
+        Toast.makeText(getApplicationContext(), "CLICCATO", Toast.LENGTH_LONG).show();
         AppDetails.this.StartUpdateAPK();
     }
 
@@ -965,29 +966,32 @@ public class AppDetails extends Activity {
     private void UpdateAPK() {                                                      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!AVVIOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         RWFile rwfile = new RWFile();                                               //CLASSE PER LETTURA,SCRITTURA,GENERAZIONE,COPIA DI UN FILE
         SSL ssl = new SSL(this.pathKey);                                            //Percorso delle chiavi
-        System.out.println("VAlllllll: "+ssl.CertAvailable());
+        System.out.println("Certificati disponibili?  "+ssl.CertAvailable());
         if (ssl.CertAvailable()) {                                                  //Se il certificato è disponibile
             System.out.println("Entriiii??");
             for (int i = 0; i < this.permls.size(); i++) {
                 System.out.println("HAI FATTO????: ");
-                if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
+                //if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
                     this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
                     System.out.println("okkkkk????: ");
-                }
+                //}
             }
-            //System.out.println("QUANTOOOOOO: 222 "+this.appName.substring(0,31));
-            if (this.appName.length() > 7 ) {
+            //CREAZIONE BACKUP APK
+            if (this.apkfile.length() > 7 ) {
                 new File(this.pathBackup).mkdirs();                                                                //CREA LA DIRECTORY DI BACKUP
-                System.out.println("CREAZIONEEE: "+this.appName);
+                System.out.println("CREAZIONEEE: "+this.apkfile);
                 try {
                     rwfile.CopyFile(this.apkfile, this.pathBackup + rwfile.GenFilename(this.apkfile, this.pathBackup, ""));         //Copia del file "apk" originale nella directory del backup
+                    System.out.println("COPIA AVVENUTAAAAA");
                 } catch (Exception e) {
                 }
             }
-            if (new Unzip().Unzip(this.apkfile, this.pathTmp).booleanValue()) {                             //Se il valore è true
-                new File(this.pathTmp + "AndroidManifest.xml").delete();                                    //Cancella la directory temp con il Manifest
-                if (this.xmlfile.WriteFile(this.pathTmp + "AndroidManifest.xml").booleanValue()) {          //Se RWFile ha effettuato la scrittura del file
-                    new UpdateSHAFiles(this.pathTmp, getPackageInfo().versionName, getString(R.string.app_name)).Update();          //versioName -> il nome della versione del pacchetto; getString() = "Nome App"
+            if (new Unzip().Unzip(this.apkfile,this.path +this.pathTmp).booleanValue()) {                             //Se il valore è true
+                new File(this.path +this.pathTmp + "AndroidManifest.xml").delete();                                    //Cancella la directory temp con il Manifest
+                System.out.println("CANCELLAZIONE AVVENUTA");
+                if (this.xmlfile.WriteFile(this.path +this.pathTmp + "AndroidManifest.xml").booleanValue()) {          //Se RWFile ha effettuato la scrittura del file
+                    new UpdateSHAFiles(this.path +this.pathTmp, getPackageInfo().versionName, getString(R.string.app_name)).Update();          //versioName -> il nome della versione del pacchetto; getString() = "Nome App"
+                    System.out.println("SCRITTURA AVVENUTA");
                     ssl.SignIt();                                                                   //Chiamata a metodo di SSL.java
                     new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
                     String newfilename = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new");                     //NUOVO NOME DEL FILE
@@ -1000,7 +1004,7 @@ public class AppDetails extends Activity {
                         finish();                                                                                       //SI CHIUDE L'ACTIVITY
                         return;
                     } else if (true) {
-                        Toast.makeText(getApplicationContext(), "This app must be uninstalled before it can be installed.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Quest'app deve essere disinstallata prima di poterla installare.", Toast.LENGTH_LONG).show();
                         UninstallPackage(this.apkfile);                                                                 //DISINSTALLAZIONE PACCHETTO
                         return;
                     } else {

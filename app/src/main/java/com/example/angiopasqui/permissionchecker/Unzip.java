@@ -60,7 +60,6 @@ public class Unzip {
                             while (true) {
                                 int count = zipInputStream.read(buffer, 0, 4096);                       //read(byte[] b, int off, int len) -> Legge l'attuale entrata ZIP in una matrice di byte. Se len non è zero, il metodo blocca fino a che non sia disponibile alcun input; altrimenti, nessun byte viene letto e 0 restituito
                                                                                                         //Ritorna il numero effettivo di byte; altrimenti -1 se viene raggiunta la fine della voce
-                                System.out.println("QUANTO VLLLLALLSLSL: "+count);
                                 if (count == -1) {                                                      //Se viene raggiunta la fine della voce
                                     break;
                                 }
@@ -72,7 +71,7 @@ public class Unzip {
                         if (singlefile.equals("")) {
                             bufferedOutputStream = bufferedOutputStream2;
                         }
-                        break;
+                        //break;
                     }
                 } catch (FileNotFoundException e2) {
                     e = e2;
