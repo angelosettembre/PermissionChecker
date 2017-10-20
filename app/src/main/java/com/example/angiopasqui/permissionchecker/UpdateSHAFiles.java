@@ -54,10 +54,12 @@ public class UpdateSHAFiles {
         }
         try {
             InputStream instream = new FileInputStream(filename);                                  //rappresentano un flusso di byte di input
-            while (new BufferedReader(new InputStreamReader(instream)).readLine() != null) {        //InputStreamReader -> è un ponte dai flussi di byte ai flussi di caratteri: legge i byte e li decodifica in caratteri utilizzando una specifica charset
+            BufferedReader buff = new BufferedReader(new InputStreamReader(instream));
+            while (buff.readLine() != null) {        //InputStreamReader -> è un ponte dai flussi di byte ai flussi di caratteri: legge i byte e li decodifica in caratteri utilizzando una specifica charset
                                                                                                     //readLine() -> legge una riga di testo
                 numLines++;
             }
+            System.out.println("FINITO IL WHILEEEE");
             instream.close();
             lines = new String[numLines];
             instream = new FileInputStream(filename);

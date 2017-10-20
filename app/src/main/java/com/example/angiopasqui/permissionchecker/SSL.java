@@ -41,12 +41,12 @@ public class SSL {
         RWFile f = new RWFile();
         Sign();                                                                         //Chiamata a metodo nativo
         System.out.println("FIRMA EFFETTUATAAAAAA");
-        f.Delete("/sdcard/at.plop.PermissionRemover/tmp/testkey");                      //Cancellazione del file "testkey" dalla cartella /tmp
+        //f.Delete("/sdcard/at.plop.PermissionRemover/tmp/testkey");                      //Cancellazione del file "testkey" dalla cartella /tmp
     }
 
     public boolean TestCert(PackageManager pm, String packageName) {                    //Verifica Certificato
         try {
-            InputStream input = new ByteArrayInputStream(pm.getPackageInfo(packageName, 64).signatures[0].toByteArray());               //getPackageInfo(64) -> prende la firma del packageName; .signatures è la lista di tutte le firme del packageName;
+            InputStream input = new ByteArrayInputStream(pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures[0].toByteArray());               //getPackageInfo(64) -> prende la firma del packageName; .signatures è la lista di tutte le firme del packageName;
             CertificateFactory cf = null;                           //Classe che definisce le funzionalità di un certificato
             try {
                 cf = CertificateFactory.getInstance("X509");        //Restituisce un oggetto certificato che implementa il tipo di certificato specificato

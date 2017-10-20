@@ -1,6 +1,9 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -13,9 +16,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -64,6 +69,8 @@ public class AppDetails extends Activity {
     private SSL ssl;
     private File file;
     private File f;
+    private ProgressDialog dialog;
+
 
 
 
@@ -160,6 +167,15 @@ public class AppDetails extends Activity {
 
             System.out.println("COSSAAAAAAA: " + getExternalFilesDir(null));
         }
+
+        /**
+         * @source https://stackoverflow.com/questions/38200282/android-os-fileuriexposedexception-file-storage-emulated-0-test-txt-exposed
+         */
+        //CONSENTE L'INSTALLAZIONE DI UN PACCHETTO DOPO LA RIMOZIONE DEL APK PRECENDENTE
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();                    //LA VM IGNORA L'Uri del file di installazione .apk
+        StrictMode.setVmPolicy(builder.build());
+
+        builder.detectFileUriExposure();                                                            //RILEVA QUANDO L'APPLICAZIONE CHIAMANTE 'espone', "file://uri" ad un altra app
 
         //CREAZIONE CARTELLA TMP
         new File(getExternalFilesDir(this.pathTmp),"");
@@ -945,7 +961,8 @@ public class AppDetails extends Activity {
     }
 
     public void allowPermission(View v) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Toast.makeText(getApplicationContext(), "CLICCATO", Toast.LENGTH_LONG).show();
+        dialog = ProgressDialog.show(AppDetails.this, "",
+                "Caricamento. Attendere...", true);
         AppDetails.this.StartUpdateAPK();
     }
 
@@ -959,6 +976,7 @@ public class AppDetails extends Activity {
                     return;
                 }
                 AppDetails.this.UpdateAPK();                                                  //!!!!!AVVIOOOO!!!!!!!!!!
+                dialog.dismiss();
             }
         });
     }
@@ -970,11 +988,12 @@ public class AppDetails extends Activity {
         if (ssl.CertAvailable()) {                                                  //Se il certificato è disponibile
             System.out.println("Entriiii??");
             for (int i = 0; i < this.permls.size(); i++) {
-                System.out.println("HAI FATTO????: ");
-                //if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
+                System.out.println("HAI FATTO????: "+this.permls.size());
+                System.out.println("okkkkk????: "+ this.permls.get(i));
+
+                if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
                     this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
-                    System.out.println("okkkkk????: ");
-                //}
+                }
             }
             //CREAZIONE BACKUP APK
             if (this.apkfile.length() > 7 ) {
@@ -995,10 +1014,11 @@ public class AppDetails extends Activity {
                     ssl.SignIt();                                                                   //Chiamata a metodo di SSL.java
                     new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
                     String newfilename = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new");                     //NUOVO NOME DEL FILE
-                    new Compress(this.pathTmp, new DirectoryFiles(this.pathTmp).GetOnlyFiles(), newfilename).zip();
+                    new Compress(this.path +this.pathTmp, new DirectoryFiles(this.path +this.pathTmp).GetOnlyFiles(), newfilename).zip();
                     RemoveTempDir();
                     this.newapkfile = newfilename;
                     String packageName = GetPackageName(this.apkfile);
+                    System.out.println("PACK NAME::  "+packageName);
                     if (packageName.equals("") || ssl.TestCert(getPackageManager(), packageName)) {
                         InstallPackage(this.newapkfile);                                                                //INSTALLAZIONE PACCHETTO
                         finish();                                                                                       //SI CHIUDE L'ACTIVITY
@@ -1074,5 +1094,14 @@ public class AppDetails extends Activity {
 
     public void RestartUpdateAPK() {
         StartUpdateAPK();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        this.dialog.dismiss();
+        if (this.activityReturn == UNINSTALL.intValue()) {
+            System.out.println("INSTALLAZIONE !!!!!!!!");
+            InstallPackage(this.newapkfile);
+            finish();
+        }
     }
 }
