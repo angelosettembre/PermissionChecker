@@ -1,7 +1,6 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -27,14 +26,14 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import kellinwood.security.zipsigner.ZipSigner;
 
 
 /**
@@ -70,6 +69,7 @@ public class AppDetails extends Activity {
     private File file;
     private File f;
     private ProgressDialog dialog;
+    private String apkBackup;
 
 
 
@@ -114,6 +114,7 @@ public class AppDetails extends Activity {
 
         if(!file.exists() && !f.exists()){
             try {
+                //Creazione testkey.pk8
                 InputStream inputStream = getAssets().open("testkey.pk8");
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
@@ -130,36 +131,24 @@ public class AppDetails extends Activity {
                 bw.close();
                 System.out.println("SADSDD" + text);
 
+                //Creazione testkey.x509.pem
+                inputStream = getAssets().open("testkey.x509.pem");
+                br = new BufferedReader(new InputStreamReader(inputStream));
+                line = "";
+                text = "";
                 f.createNewFile();
+
                 BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
-                writer.write("-----BEGIN CERTIFICATE-----\n" +
-                        "MIIEqDCCA5CgAwIBAgIJAJNurL4H8gHfMA0GCSqGSIb3DQEBBQUAMIGUMQswCQYD\n" +
-                        "VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4g\n" +
-                        "VmlldzEQMA4GA1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UE\n" +
-                        "AxMHQW5kcm9pZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTAe\n" +
-                        "Fw0wODAyMjkwMTMzNDZaFw0zNTA3MTcwMTMzNDZaMIGUMQswCQYDVQQGEwJVUzET\n" +
-                        "MBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4G\n" +
-                        "A1UEChMHQW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9p\n" +
-                        "ZDEiMCAGCSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbTCCASAwDQYJKoZI\n" +
-                        "hvcNAQEBBQADggENADCCAQgCggEBANaTGQTexgskse3HYuDZ2CU+Ps1s6x3i/waM\n" +
-                        "qOi8qM1r03hupwqnbOYOuw+ZNVn/2T53qUPn6D1LZLjk/qLT5lbx4meoG7+yMLV4\n" +
-                        "wgRDvkxyGLhG9SEVhvA4oU6Jwr44f46+z4/Kw9oe4zDJ6pPQp8PcSvNQIg1QCAcy\n" +
-                        "4ICXF+5qBTNZ5qaU7Cyz8oSgpGbIepTYOzEJOmc3Li9kEsBubULxWBjf/gOBzAzU\n" +
-                        "RNps3cO4JFgZSAGzJWQTT7/emMkod0jb9WdqVA2BVMi7yge54kdVMxHEa5r3b97s\n" +
-                        "zI5p58ii0I54JiCUP5lyfTwE/nKZHZnfm644oLIXf6MdW2r+6R8CAQOjgfwwgfkw\n" +
-                        "HQYDVR0OBBYEFEhZAFY9JyxGrhGGBaR0GawJyowRMIHJBgNVHSMEgcEwgb6AFEhZ\n" +
-                        "AFY9JyxGrhGGBaR0GawJyowRoYGapIGXMIGUMQswCQYDVQQGEwJVUzETMBEGA1UE\n" +
-                        "CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMH\n" +
-                        "QW5kcm9pZDEQMA4GA1UECxMHQW5kcm9pZDEQMA4GA1UEAxMHQW5kcm9pZDEiMCAG\n" +
-                        "CSqGSIb3DQEJARYTYW5kcm9pZEBhbmRyb2lkLmNvbYIJAJNurL4H8gHfMAwGA1Ud\n" +
-                        "EwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAHqvlozrUMRBBVEY0NqrrwFbinZa\n" +
-                        "J6cVosK0TyIUFf/azgMJWr+kLfcHCHJsIGnlw27drgQAvilFLAhLwn62oX6snb4Y\n" +
-                        "LCBOsVMR9FXYJLZW2+TcIkCRLXWG/oiVHQGo/rWuWkJgU134NDEFJCJGjDbiLCpe\n" +
-                        "+ZTWHdcwauTJ9pUbo8EvHRkU3cYfGmLaLfgn9gP+pWA7LFQNvXwBnDa6sppCccEX\n" +
-                        "31I828XzgXpJ4O+mDL1/dBd+ek8ZPUP0IgdyZm5MTYPhvVqGCHzzTy3sIeJFymwr\n" +
-                        "sBbmg2OAUNLEMO6nwmocSdN2ClirfxqCzJOLSDE4QyS9BAH6EhY6UFcOaE0=\n" +
-                        "-----END CERTIFICATE-----");
+
+                while ((line = br.readLine()) != null) {
+                    text += line.toString();
+                    text += '\n';
+                }
+
+                writer.write(text);
                 writer.close();
+                System.out.println("Cosa" + text);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -217,6 +206,9 @@ public class AppDetails extends Activity {
         Drawable denied = getDrawable(R.drawable.denied);
         Drawable grant = getDrawable(R.drawable.check_granted);
 
+        View v = getLayoutInflater().inflate(R.layout.app_list_detail_item,null);
+        LinearLayout containerDeny = (LinearLayout) v.findViewById(R.id.containerAllowDeny);
+
 
         try {
             pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
@@ -268,10 +260,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -284,10 +278,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -300,10 +296,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -316,10 +314,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -332,10 +332,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -348,10 +350,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -364,10 +368,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -380,10 +386,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -396,10 +404,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -412,10 +422,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -428,10 +440,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -444,10 +458,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -460,10 +476,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -476,10 +494,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -492,10 +512,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -508,10 +530,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -524,10 +548,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -540,10 +566,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -556,10 +584,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -572,10 +602,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -588,10 +620,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -604,10 +638,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -620,10 +656,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -636,10 +674,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -652,10 +692,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -668,10 +710,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -684,10 +728,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -700,10 +746,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -716,10 +764,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -732,10 +782,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -748,10 +800,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -764,10 +818,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -780,10 +836,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -796,10 +854,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -812,10 +872,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -828,10 +890,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -844,10 +908,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -860,10 +926,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -876,10 +944,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -892,10 +962,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -908,10 +980,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -924,10 +998,12 @@ public class AppDetails extends Activity {
                                         case PackageManager.PERMISSION_GRANTED:
                                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
+                                            permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
                                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
+                                            permesso.setContainerVisible(View.INVISIBLE);
                                             break;
                                     }
                                     break;
@@ -945,10 +1021,12 @@ public class AppDetails extends Activity {
                         case PackageManager.PERMISSION_GRANTED:
                             System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                             permesso.setCheckPermission(grant);
+                            permesso.setContainerVisible(View.VISIBLE);
                             break;
                         case PackageManager.PERMISSION_DENIED:
                             System.out.println("1234 PERMESSO NON CONCESSO!!!");
                             permesso.setCheckPermission(denied);
+                            permesso.setContainerVisible(View.INVISIBLE);
                             break;
                     }
                 }
@@ -999,8 +1077,9 @@ public class AppDetails extends Activity {
             if (this.apkfile.length() > 7 ) {
                 new File(this.pathBackup).mkdirs();                                                                //CREA LA DIRECTORY DI BACKUP
                 System.out.println("CREAZIONEEE: "+this.apkfile);
+                apkBackup = this.pathBackup + rwfile.GenFilename(this.apkfile, this.pathBackup, "");
                 try {
-                    rwfile.CopyFile(this.apkfile, this.pathBackup + rwfile.GenFilename(this.apkfile, this.pathBackup, ""));         //Copia del file "apk" originale nella directory del backup
+                    rwfile.CopyFile(this.apkfile,apkBackup);         //Copia del file "apk" originale nella directory del backup
                     System.out.println("COPIA AVVENUTAAAAA");
                 } catch (Exception e) {
                 }
@@ -1011,10 +1090,27 @@ public class AppDetails extends Activity {
                 if (this.xmlfile.WriteFile(this.path +this.pathTmp + "AndroidManifest.xml").booleanValue()) {          //Se RWFile ha effettuato la scrittura del file
                     new UpdateSHAFiles(this.path +this.pathTmp, getPackageInfo().versionName, getString(R.string.app_name)).Update();          //versioName -> il nome della versione del pacchetto; getString() = "Nome App"
                     System.out.println("SCRITTURA AVVENUTA");
-                    ssl.SignIt();                                                                   //Chiamata a metodo di SSL.java
+                    //ssl.SignIt();                                                                   //Chiamata a metodo di SSL.java
+
                     new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
                     String newfilename = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new");                     //NUOVO NOME DEL FILE
-                    new Compress(this.path +this.pathTmp, new DirectoryFiles(this.path +this.pathTmp).GetOnlyFiles(), newfilename).zip();
+
+                    /**
+                     * Qui avviene la firma del apk, utilizzando una libreria esterna ZipSigner.jar
+                     * @sources zipsigner-lib-1.17.jar;
+                     * @sources kellinwood-logging-lib.1.1.jar
+                     * @sources zipio-lib-1.8.jar
+                     */
+                    try {
+                        ZipSigner zipSigner = new ZipSigner();
+                        zipSigner.setKeymode("testkey");
+                        zipSigner.signZip(apkBackup,newfilename);
+                    } catch (Throwable t) {
+                        Log.e("Signing apk", "Error while signing apk to external directory", t);
+                        t.printStackTrace();
+                    }
+
+                    //new Compress(this.path +this.pathTmp, new DirectoryFiles(this.path +this.pathTmp).GetOnlyFiles(), newfilename).zip();
                     RemoveTempDir();
                     this.newapkfile = newfilename;
                     String packageName = GetPackageName(this.apkfile);
@@ -1057,7 +1153,7 @@ public class AppDetails extends Activity {
     }
 
     private void RemoveTempDir() {                      //Rimuovi la directory temp
-        new DirectoryRemove("").RemoveDir(this.pathTmp);
+        new DirectoryRemove("").RemoveDir(this.path +this.pathTmp);
     }
 
     private String GetPackageName(String file) {                        //RITORNA IL NOME DEL PACCHETTO (com.""."")
@@ -1097,11 +1193,25 @@ public class AppDetails extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.dialog.dismiss();
-        if (this.activityReturn == UNINSTALL.intValue()) {
-            System.out.println("INSTALLAZIONE !!!!!!!!");
-            InstallPackage(this.newapkfile);
+        boolean isPresent = isAppPresent(packageName,this);
+        if(isPresent){
+            //L'utente ha cliccato su annulla disinstallazione
             finish();
+        }else{
+            if (this.activityReturn == UNINSTALL.intValue()) {
+                Toast.makeText(getApplicationContext(), "IL FILE APK DI BACKUP SI TROVA IN /storage/emulated/0/Android/data/com.example.angiopasqui.permissionchecker/files/backup", Toast.LENGTH_LONG).show();
+                InstallPackage(this.newapkfile);
+                finish();
+            }
+        }
+    }
+
+    public static boolean  isAppPresent(String packageName,Context context) {                       //CONTROLLA SE L'APP SIA ANCORA PRESENTE O MENO NEL SISTEMA
+        try{
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName, 0 );
+            return true;
+        } catch( PackageManager.NameNotFoundException e ){
+            return false;
         }
     }
 }

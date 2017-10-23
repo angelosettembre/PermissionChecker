@@ -11,9 +11,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        ndk{
-            moduleName "plopapksign"
-        }
     }
     buildTypes {
         release {
@@ -22,11 +19,6 @@ android {
         }
     }
     productFlavors {
-    }
-    externalNativeBuild {
-        ndkBuild {
-            path 'src/main/jni/Android.mk'
-        }
     }
 }
 
@@ -37,4 +29,7 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:support-v4:26.0.0-alpha1'
+    compile files('libs/zipsigner-lib-1.17.jar')
+    compile files('libs/kellinwood-logging-lib-1.1.jar')
+    compile files('libs/zipio-lib-1.8.jar')
 }

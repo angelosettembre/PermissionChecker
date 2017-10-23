@@ -1,6 +1,7 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import java.io.Serializable;
 
@@ -14,6 +15,7 @@ public class Permesso implements Serializable {
     private String description;
     private Drawable icon;
     private Drawable checkPermission;
+    private int containerVisible;
 
     public int len;
     String name_;
@@ -91,6 +93,14 @@ public class Permesso implements Serializable {
 
     public void setCheckPermission(Drawable checkPermission) {
         this.checkPermission = checkPermission;
+    }
+
+    public int getContainerVisible() {
+        return containerVisible;
+    }
+
+    public void setContainerVisible(int containerVisible) {
+        this.containerVisible = containerVisible;
     }
 }
 

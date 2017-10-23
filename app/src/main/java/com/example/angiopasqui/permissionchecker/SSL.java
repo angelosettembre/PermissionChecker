@@ -16,12 +16,6 @@ public class SSL {
     public String privatekey;
     public String privatekeyName = "testkey.pk8";                                       //SECONDA CHIAVE PER LA FIRMA DELL'APK
 
-    private static native void Sign();                                                  //METODO NATIVO
-
-    static {
-        System.out.println("CIAOOONEEEEE::");
-        System.loadLibrary("plopapksign");                                              //CARICAMENTO LIBRERIA DI CODICE NATIVO PER LA FIRMA DEL APK /src/main/jniLibs/armeabi/libplopaksing.so ("senza .so")
-    }
 
     public SSL(String path) {
         this.path = path;
@@ -37,12 +31,7 @@ public class SSL {
         return false;
     }
 
-    public void SignIt() {                                                              //Metodo per la firma
-        RWFile f = new RWFile();
-        Sign();                                                                         //Chiamata a metodo nativo
-        System.out.println("FIRMA EFFETTUATAAAAAA");
-        //f.Delete("/sdcard/at.plop.PermissionRemover/tmp/testkey");                      //Cancellazione del file "testkey" dalla cartella /tmp
-    }
+
 
     public boolean TestCert(PackageManager pm, String packageName) {                    //Verifica Certificato
         try {
