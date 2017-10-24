@@ -73,7 +73,7 @@
 
         <ImageView
             android:id="@+id/checkGRANT_DENIED"
-            android:layout_marginLeft="130dp"
+            android:layout_marginLeft="100dp"
             android:layout_alignBottom="@id/containerAllowDeny"
             android:layout_toRightOf="@id/containerAllowDeny"
             android:layout_width="30dp"
