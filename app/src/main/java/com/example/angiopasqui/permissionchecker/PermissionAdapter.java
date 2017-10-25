@@ -40,12 +40,14 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         TextView permissionDescription;
         ImageView checkPermission;
         LinearLayout containerDeny;
+        ImageView denyButton;
 
         iconPermission = (ImageView) v.findViewById(R.id.iconPermssion);
         namePermission = (TextView) v.findViewById(R.id.namePermission);
         permissionDescription = (TextView) v.findViewById(R.id.descriptionPermission);
         checkPermission = (ImageView) v.findViewById(R.id.checkGRANT_DENIED);
         containerDeny = (LinearLayout) v.findViewById(R.id.containerAllowDeny);
+        denyButton = (ImageView) v.findViewById(R.id.denyButton);
 
         iconPermission.setImageDrawable(perm.getIcon());
         namePermission.setText(perm.getName());
@@ -58,6 +60,9 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         } else {
             containerDeny.setVisibility(View.INVISIBLE);
         }
+
+        denyButton.setTag(position);
+
         return v;
     }
 }

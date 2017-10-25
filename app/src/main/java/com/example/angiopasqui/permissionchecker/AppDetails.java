@@ -19,6 +19,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,12 +27,17 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import kellinwood.security.zipsigner.ZipSigner;
 
@@ -66,6 +72,7 @@ public class AppDetails extends Activity {
     private static final Integer UNINSTALL = Integer.valueOf(2);
     private ProgressDialog dialog;
     private String apkBackup;
+    private Permesso perm;
 
 
     @Override
@@ -974,10 +981,11 @@ public class AppDetails extends Activity {
             e.printStackTrace();
         }
         listPermission.setAdapter(arrayAdapterDescription);
-
     }
 
-    public void allowPermission(View v) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public void allowPermission(View v) {
+        int position = Integer.parseInt(v.getTag().toString());
+        perm = arrayAdapterDescription.getItem(position);
         dialog = ProgressDialog.show(AppDetails.this, "",
                 "Caricamento. Attendere...", true);
         AppDetails.this.StartUpdateAPK();
@@ -1005,9 +1013,18 @@ public class AppDetails extends Activity {
             System.out.println("HAI FATTO????: " + this.permls.size());
             System.out.println("okkkkk????: " + this.permls.get(i));
 
-            if (((Permesso) this.permls.get(i)).GetChecked().booleanValue()) {
-                this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
+            System.out.println("Nome Per: "+this.permls.get(i).getName_());
+            if(perm.getName().contains("permission")){
+                int index = perm.getName().lastIndexOf("ssion.");
+                System.out.println("COSALOOOOOO O OO O: "+perm.getName().replace(perm.getName().substring(0,index+6),"")+" a _"+index);
+
+                if(this.permls.get(i).getName_().equalsIgnoreCase(perm.getName().replace(perm.getName().substring(0,index+6),""))){
+                    System.out.println("ENTRATOOOO");
+                    this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
+                }
             }
+
+
         }
         //CREAZIONE BACKUP APK
         if (this.apkfile.length() > 7) {
@@ -1028,7 +1045,11 @@ public class AppDetails extends Activity {
                 System.out.println("SCRITTURA AVVENUTA");
 
                 new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
-                String newfilename = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new");                     //NUOVO NOME DEL FILE
+                String newfilename = this.path +this.pathTmp + rwfile.GenFilename(this.apkfile, this.path +this.pathTmp, " new");                     //NUOVO NOME DEL FILE
+                String apk_signed = this.pathNew + rwfile.GenFilename(this.apkfile, this.pathNew, " new_signed");
+
+
+                new Compress(this.path +this.pathTmp, new DirectoryFiles(this.path +this.pathTmp).GetOnlyFiles(), newfilename).zip();                   //CREAZIONE DEL .zip del apk con il manifest modificato
 
                 /**
                  * Qui avviene la firma del apk, utilizzando una libreria esterna ZipSigner.jar
@@ -1039,15 +1060,14 @@ public class AppDetails extends Activity {
                 try {
                     ZipSigner zipSigner = new ZipSigner();
                     zipSigner.setKeymode("testkey");
-                    zipSigner.signZip(apkBackup, newfilename);
+                    zipSigner.signZip(newfilename,apk_signed);
                 } catch (Throwable t) {
                     Log.e("Signing apk", "Error while signing apk to external directory", t);
                     t.printStackTrace();
                 }
 
-                //new Compress(this.path +this.pathTmp, new DirectoryFiles(this.path +this.pathTmp).GetOnlyFiles(), newfilename).zip();
                 RemoveTempDir();
-                this.newapkfile = newfilename;
+                this.newapkfile = apk_signed;
                 String packageName = GetPackageName(this.apkfile);
                 System.out.println("PACK NAME::  " + packageName);
                 if (packageName.equals("")) {

@@ -69,6 +69,14 @@ public class Permesso implements Serializable {
         this.description = description;
     }
 
+    public String getName_() {
+        return name_;
+    }
+
+    public void setName_(String name_) {
+        this.name_ = name_;
+    }
+
     @Override
     public String toString() {
         return "Permesso{" +

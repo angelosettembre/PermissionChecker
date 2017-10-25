@@ -42,10 +42,7 @@ public class Unzip {
                     }
                     String zipEntryName = zipEntry.getName();                                                                   //getName() -> Restituisce il nome della voce
                     //System.out.println("Fillllleeeeeee: 222222 "+zipEntryName);
-                    StringBuilder sr = new StringBuilder(dest);
-                    sr.append(zipEntryName);
-                    //System.out.println("Fillllleeeeeee: 444 "+sr);
-                    File file = new File(sr.toString());              //CREAZIONE FILE
+                    File file = new File(new StringBuilder(String.valueOf(dest)).append(zipEntryName).toString());              //CREAZIONE FILE
                     if (singlefile.equals("") || singlefile.equals(zipEntryName)) {
                         //System.out.println("TROVATOOOOOOOOO 2 22 2 2 22 ");
                         if (zipEntry.isDirectory()) {                                                                           //Se è una directory
