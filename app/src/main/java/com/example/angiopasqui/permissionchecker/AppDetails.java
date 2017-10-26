@@ -1,8 +1,10 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -13,9 +15,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -146,6 +150,7 @@ public class AppDetails extends Activity {
         pm = getPackageManager();
         PackageInfo pi;
         PermissionInfo pemInfo = null;
+        String protectionLevel;
 
         Permesso permesso = new Permesso();
 
@@ -187,6 +192,7 @@ public class AppDetails extends Activity {
                                 Drawable icona = pm.getResourcesForApplication("android").getDrawable(groupInfo.icon);
                                 permesso.setIcon(icona);
 
+                                permesso.setProtectionLevel(pemInfo.protectionLevel);
                                 arrayAdapterDescription.add(permesso);
                                 check = false;
                                 System.out.println("CONTINUA DOPO ECCEZIONE");
@@ -954,6 +960,7 @@ public class AppDetails extends Activity {
                                     }
                                     break;
                             }
+                            permesso.setProtectionLevel(pemInfo.protectionLevel);
                             arrayAdapterDescription.add(permesso);
                         }
 
@@ -988,7 +995,41 @@ public class AppDetails extends Activity {
         perm = arrayAdapterDescription.getItem(position);
         dialog = ProgressDialog.show(AppDetails.this, "",
                 "Caricamento. Attendere...", true);
-        AppDetails.this.StartUpdateAPK();
+        if(perm.getProtectionLevel() == PermissionInfo.PROTECTION_NORMAL){                          //SE IL PERMESSO E' UN PERMESSO NORMALE
+            final AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
+            }
+            builder.setTitle("Controllo Permesso")
+                    .setMessage("Eliminando questo permesso l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare?")
+                    .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            builder.setCancelable(true);
+                            AppDetails.this.StartUpdateAPK();
+                        }
+                    })
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getApplicationContext(), "Azione annullata",Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    })
+                    .show();
+        }
+        else {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", packageName, null);
+            intent.setData(uri);
+            startActivity(intent);
+            finish();
+            //AppDetails.this.StartUpdateAPK();
+        }
+
     }
 
     private void StartUpdateAPK() {                                                                 //Avvio UpdateApk con Thread

@@ -16,6 +16,7 @@ public class Permesso implements Serializable {
     private Drawable icon;
     private Drawable checkPermission;
     private int containerVisible;
+    private int protectionLevel;
 
     public int len;
     String name_;
@@ -40,6 +41,13 @@ public class Permesso implements Serializable {
         this.checkPermission = checkPermission;
     }
 
+    public int getProtectionLevel() {
+        return protectionLevel;
+    }
+
+    public void setProtectionLevel(int protectionLevel) {
+        this.protectionLevel = protectionLevel;
+    }
 
     public Boolean GetChecked() {
         return this.checked;
