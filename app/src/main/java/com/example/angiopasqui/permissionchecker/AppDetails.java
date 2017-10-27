@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -990,7 +992,7 @@ public class AppDetails extends Activity {
         listPermission.setAdapter(arrayAdapterDescription);
     }
 
-    public void allowPermission(View v) {
+    public void denyPermission(View v) {
         int position = Integer.parseInt(v.getTag().toString());
         perm = arrayAdapterDescription.getItem(position);
         dialog = ProgressDialog.show(AppDetails.this, "",
@@ -1002,7 +1004,7 @@ public class AppDetails extends Activity {
             } else {
                 builder = new AlertDialog.Builder(this);
             }
-            builder.setTitle("Controllo Permesso")
+            builder.setTitle("PERMESSO NORMALE")
                     .setMessage("Eliminando questo permesso l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare?")
                     .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                         @Override
@@ -1021,11 +1023,27 @@ public class AppDetails extends Activity {
                     .show();
         }
         else {
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN,null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            List<ResolveInfo> listapp = pm.queryIntentActivities(mainIntent,0);
+            Collections.sort(listapp, new ResolveInfo.DisplayNameComparator(pm));
+            for (ResolveInfo temp : listapp) {
+                Log.v("my logs", "package and activity name = "
+                        + temp.activityInfo.packageName + "    "
+                        + temp.activityInfo.name);
+                if(temp.activityInfo.packageName.equalsIgnoreCase(packageName)){
+                    Uri uri = Uri.parse("www.google.com");
+
+                    break;
+                }
+            }
+
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             Uri uri = Uri.fromParts("package", packageName, null);
             intent.setData(uri);
             startActivity(intent);
+            dialog.dismiss();
             finish();
             //AppDetails.this.StartUpdateAPK();
         }
