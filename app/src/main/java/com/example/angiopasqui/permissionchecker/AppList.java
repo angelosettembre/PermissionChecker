@@ -30,6 +30,7 @@ public class AppList extends Activity {
     CustomAdapter customAdapter;
     App app;
     String packageName;
+    PackageManager pm;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -47,7 +48,7 @@ public class AppList extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_list);
-        PackageManager pm = getPackageManager();
+        pm = getPackageManager();
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -113,5 +114,27 @@ public class AppList extends Activity {
                 count--;
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        List<ApplicationInfo> apps = pm.getInstalledApplications(0);
+        //GET APPS
+        for (ApplicationInfo applicationInfo : apps)
+        {
+            if((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) {
+                app = new App();
+                app.setName((String) pm.getApplicationLabel(applicationInfo));
+                Log.d("DEBUG", "NOME APP" + app.getName());
+                app.setIcon(pm.getApplicationIcon(applicationInfo));
+                app.setPackageName(applicationInfo.packageName);
+                appList.add(app);
+                sortListByName();
+                removeDuplicate();
+                customAdapter.add(app);
+            }
+        }
+        listView.setAdapter(customAdapter);
+        super.onResume();
     }
 }

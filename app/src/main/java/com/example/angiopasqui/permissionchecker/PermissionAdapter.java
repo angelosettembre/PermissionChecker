@@ -1,6 +1,7 @@
 package com.example.angiopasqui.permissionchecker;
 
 import android.content.pm.PermissionInfo;
+import android.content.res.Resources;
 import android.widget.ArrayAdapter;
 import android.content.Context;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         ImageView checkPermission;
         LinearLayout containerDeny;
         ImageView denyButton;
+        TextView denyText;
         LinearLayout containerAllow;
         ImageView allowButton;
 
@@ -53,6 +55,7 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         denyButton = (ImageView) v.findViewById(R.id.denyButton);
         containerAllow = (LinearLayout) v.findViewById(R.id.containerAllow);
         allowButton = (ImageView) v.findViewById(R.id.allowButton);
+        denyText = (TextView) v.findViewById(R.id.denyText);
 
         iconPermission.setImageDrawable(perm.getIcon());
         namePermission.setText(perm.getName());
@@ -62,6 +65,10 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
 
         if(perm.getContainerVisible() == View.VISIBLE){
             containerDeny.setVisibility(View.VISIBLE);
+            if(perm.getProtectionLevel() == PermissionInfo.PROTECTION_NORMAL){
+                denyText.setText("ELIMINA");
+                denyButton.setImageResource(R.drawable.x_mark1);
+            }
             containerAllow.setVisibility(View.INVISIBLE);
         } else {
             containerDeny.setVisibility(View.INVISIBLE);

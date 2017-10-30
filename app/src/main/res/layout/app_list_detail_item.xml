@@ -61,6 +61,7 @@
                 android:onClick="denyPermission"
                 />
             <TextView
+                android:id="@+id/denyText"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
                 android:textStyle="bold"

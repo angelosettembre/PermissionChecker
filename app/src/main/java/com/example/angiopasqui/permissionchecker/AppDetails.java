@@ -863,7 +863,8 @@ public class AppDetails extends Activity {
                 builder = new AlertDialog.Builder(this);
             }
             builder.setTitle("ELIMINAZIONE PERMESSO")
-                    .setMessage("Con questa azione il permesso verrà eliminato per cui l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare?")
+                    .setMessage("Con questa azione il permesso verrà eliminato per cui l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare? \n"+
+                            "Se elimini, IL FILE APK DI BACKUP SI TROVA IN: \n /storage/emulated/0/Android/data/com.example.angiopasqui.permissionchecker/files/backup")
                     .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -1030,7 +1031,6 @@ public class AppDetails extends Activity {
             finish();
         } else {
             if (this.activityReturn == UNINSTALL.intValue()) {
-                Toast.makeText(getApplicationContext(), "IL FILE APK DI BACKUP SI TROVA IN /storage/emulated/0/Android/data/com.example.angiopasqui.permissionchecker/files/backup", Toast.LENGTH_LONG).show();
                 InstallPackage(this.newapkfile);
                 finish();
             }
