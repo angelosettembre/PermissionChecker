@@ -4,5 +4,10 @@
     <string name="monitoring_not_active">Monitoraggio non attivo</string>
     <string name="list_app"><u>Vai alla lista delle app</u></string>
     <string name="init_monitoring">Inizia il monitoraggio delle app</string>
+    <string name="offToggleState">Off</string>
+    <string name="onToggleState">On</string>
+    <string name="nonetworkaccess">Your device does not seem to have network connectivity. Lumen cannot be launched at this moment. If the problem persists, try to reboot your device</string>
+    <string name="cancel">Cancel</string>
+    <string name="connected">VPN Connessa</string>
     <string name="download">Download</string>
 </resources>

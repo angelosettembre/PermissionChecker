@@ -3,12 +3,16 @@ package com.example.angiopasqui.permissionchecker;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.angiopasqui.permissionchecker.privacyLeaks.GlobalState;
+import com.example.angiopasqui.permissionchecker.privacyLeaks.LocalVpnService;
+import com.example.angiopasqui.permissionchecker.privacyLeaks.PrivacyLeaksMain;
 
 public class MainActivity extends Activity {
     ImageView icon_lock_unlcok;
@@ -18,6 +22,7 @@ public class MainActivity extends Activity {
     TextView text_init_Monitoring;
     ImageView start;
     ImageView stop;
+    Button goPrivacyLeaksActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class MainActivity extends Activity {
         text_init_Monitoring = (TextView) findViewById(R.id.text_initMonitoring);
         start = (ImageView) findViewById(R.id.start);
         stop = (ImageView) findViewById(R.id.stop);
+        goPrivacyLeaksActivity = (Button) findViewById(R.id.goPrivacyLeaksActivity);
 
         icon_listApp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,10 +58,20 @@ public class MainActivity extends Activity {
             }
         });
 
-        /*if(Helper.isAppRunning(this,"com.example.angiopasqui.permissionchecker")) {
-            Log.d("RUNNING", "App in ESECUZIONE");
-        } else {
-            Log.d("STOP", "App NON in esecuzione");
-        }*/
+        goPrivacyLeaksActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),PrivacyLeaksMain.class);
+                startActivity(i);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("DEBUG","onDestroy MainActivity");
+
+        super.onDestroy();
     }
 }

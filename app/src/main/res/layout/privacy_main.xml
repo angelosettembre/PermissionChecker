@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/firstRelative"
+    android:background="#268DFC"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/init_monitoring"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:textColor="#ff8c00"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/light_gray_font"
+        android:background="@drawable/toggleselector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/titleList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LISTA APP MONITORATE"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_below="@id/toggleButton"
+        android:layout_marginLeft="10dp"
+        />
+
+    <RelativeLayout
+        android:id="@+id/containerAppLeaks"
+        android:layout_below="@id/titleList"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d5f0ff">
+
+        <ListView
+            android:id="@+id/listAppLeaks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></ListView>
+    </RelativeLayout>
+
+</RelativeLayout>

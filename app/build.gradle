@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
 
     }
     buildTypes {
@@ -32,4 +33,9 @@ dependencies {
     compile files('libs/zipsigner-lib-1.17.jar')
     compile files('libs/kellinwood-logging-lib-1.1.jar')
     compile files('libs/zipio-lib-1.8.jar')
+    compile 'org.pcap4j:pcap4j-core:1.7.2'
+    compile 'org.pcap4j:pcap4j-packetfactory-static:1.7.2'
+    compile 'dnsjava:dnsjava:2.1.8'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.pcap4j:pcap4j-packetfactory-propertiesbased:1.7.2'
 }
