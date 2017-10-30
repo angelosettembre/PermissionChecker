@@ -43,7 +43,7 @@
             android:layout_below="@+id/namePermission"/>
 
         <LinearLayout
-            android:id="@+id/containerAllowDeny"
+            android:id="@+id/containerDeny"
             android:layout_marginLeft="100dp"
             android:layout_below="@id/descriptionPermission"
             android:layout_width="wrap_content"
@@ -71,11 +71,40 @@
                 />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/containerAllow"
+            android:layout_marginLeft="100dp"
+            android:layout_below="@id/descriptionPermission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/allowButton"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/allow"
+                android:clickable="true"
+                android:onClick="denyPermission"
+                />
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:layout_below="@id/descriptionPermission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONSENTI"
+                android:layout_toRightOf="@id/allowButton"
+                />
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/checkGRANT_DENIED"
             android:layout_marginLeft="100dp"
-            android:layout_alignBottom="@id/containerAllowDeny"
-            android:layout_toRightOf="@id/containerAllowDeny"
+            android:layout_alignBottom="@id/containerAllow"
+            android:layout_toRightOf="@id/containerAllow"
             android:layout_width="30dp"
             android:layout_height="30dp"
             />

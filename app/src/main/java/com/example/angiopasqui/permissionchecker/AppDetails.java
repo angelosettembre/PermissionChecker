@@ -134,14 +134,10 @@ public class AppDetails extends Activity {
         for (ApplicationInfo packInfo : apps) {
             if ((packInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) {
                 if (packInfo.packageName.equals(packageName)) {
-                    System.out.println("NOMMMEEEE: " + packInfo.packageName);
                     apkfile = packInfo.sourceDir;
-                    System.out.println("APK DIRECTORYYY " + packInfo.sourceDir);
                     boolean b = new Unzip().Unzip(packInfo.sourceDir, this.path + this.pathTmp, "AndroidManifest.xml").booleanValue();
-                    System.out.println("TUTTO APPOSTOOOOOOO" + b);
                     this.xmlfile = new XMLFile(this.path + this.pathTmp + "AndroidManifest.xml");
                     this.permls = this.xmlfile.GetPermisionList();                                      //LISTA PERMESSI PRESI DAL FILE MANIFEST DELL'apk
-                    System.out.println("LISTTAAAAA PERMMIEE:: " + permls);
                     break;
                 }
             }
@@ -174,21 +170,15 @@ public class AppDetails extends Activity {
                         if (requestedPermissions[j].contains(("android.permission")) || requestedPermissions[j].contains("com.google") || requestedPermissions[j].contains("com.android.launcher")) {
                             permesso = new Permesso();
 
-                            Log.d("test", requestedPermissions[j]);
-
                             pemInfo = pm.getPermissionInfo(requestedPermissions[j], 0);
 
                             check = true;
 
                             if (pemInfo.loadDescription(pm) == null) {
                                 //Do nothing
-                                System.out.println("CI ARRIVIII!!!");
                             } else {
                                 permesso.setName(pemInfo.name);
                                 permesso.setDescription((String) pemInfo.loadDescription(pm));
-                                System.out.println("NOME PERMESSOOOOOOOO " + pemInfo.name);
-
-                                System.out.println("NOME GRUPPOOO " + pemInfo.group);
 
                                 groupInfo = pm.getPermissionGroupInfo(pemInfo.group, 0);
                                 Drawable icona = pm.getResourcesForApplication("android").getDrawable(groupInfo.icon);
@@ -197,27 +187,22 @@ public class AppDetails extends Activity {
                                 permesso.setProtectionLevel(pemInfo.protectionLevel);
                                 arrayAdapterDescription.add(permesso);
                                 check = false;
-                                System.out.println("CONTINUA DOPO ECCEZIONE");
                             }
                         }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
-                        System.out.println("ECCEZIONEEEEE");
                         if (check) {
                             switch (pemInfo.name) {
                                 case "android.permission.INTERNET":
                                     iconPermission = getResources().getDrawable(R.drawable.internet_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.INTERNET", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -227,15 +212,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.bluetooth_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.BLUETOOTH", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -245,15 +227,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.receive_wap_push_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.google.android.c2dm.permission.RECEIVE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -263,15 +242,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.gs_service);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.google.android.providers.gsf.permission.READ_GSERVICES", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -281,15 +257,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.modify_audio_settings_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.MODIFY_AUDIO_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -299,15 +272,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.access_network_state_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.ACCESS_NETWORK_STATE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -317,15 +287,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.access_wifi_state_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.ACCESS_WIFI_STATE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -335,15 +302,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.wake_lock);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.WAKE_LOCK", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -353,15 +317,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.manage_account);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.MANAGE_ACCOUNTS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -371,15 +332,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.read_profile_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.READ_PROFILE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -389,15 +347,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.sync);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.WRITE_SYNC_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -407,15 +362,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.read_sync_settings_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.READ_SYNC_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -425,15 +377,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.authenticate_accounts_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.AUTHENTICATE_ACCOUNTS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -443,15 +392,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.vibrate_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.VIBRATE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -461,15 +407,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.alert);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.SYSTEM_ALERT_WINDOW", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -479,15 +422,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.receive_boot_completed_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.RECEIVE_BOOT_COMPLETED", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -497,15 +437,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.install_shortcut_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.android.launcher.permission.INSTALL_SHORTCUT", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -515,15 +452,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.uninstall_shortcut_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.android.launcher.permission.UNINSTALL_SHORTCUT", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -536,12 +470,10 @@ public class AppDetails extends Activity {
                                     System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -551,15 +483,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.nfc_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.NFC", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -569,15 +498,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.stats);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.READ_SYNC_STATS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -587,15 +513,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.write_sett);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.WRITE_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -605,15 +528,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.task);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.GET_TASKS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -623,15 +543,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.get_package_size_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.GET_PACKAGE_SIZE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -641,15 +558,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.broadcast_sticky_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.BROADCAST_STICKY", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -659,15 +573,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.change_network_state_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.CHANGE_NETWORK_STATE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -677,15 +588,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.expand_status_bar_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.EXPAND_STATUS_BAR", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -695,15 +603,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.bluetooth_admin_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.BLUETOOTH_ADMIN", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -713,15 +618,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.use_credentials_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.USE_CREDENTIALS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -731,15 +633,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.request_install_packages_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.REQUEST_INSTALL_PACKAGES", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -749,15 +648,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.write_sms_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.WRITE_SMS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -767,15 +663,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.change_wifi_multicast_state_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.CHANGE_WIFI_MULTICAST_STATE", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -785,15 +678,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.kill_background_processes_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.KILL_BACKGROUND_PROCESSES", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -803,15 +693,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.send_sms_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.google.android.gm.permission.AUTO_SEND", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -821,15 +708,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.fitness);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.google.android.gms.permission.ACTIVITY_RECOGNITION", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -839,15 +723,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.read_settings);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.android.launcher.permission.READ_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -857,15 +738,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.write_settings);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("com.android.launcher.permission.WRITE_SETTINGS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -875,15 +753,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.application_close);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.RESTART_PACKAGES", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -893,15 +768,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.download_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.DOWNLOAD_WITHOUT_NOTIFICATION", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -911,15 +783,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.disable_keyguard_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.DISABLE_KEYGUARD", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -929,15 +798,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.reorder_tasks_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.REORDER_TASKS", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -947,15 +813,12 @@ public class AppDetails extends Activity {
                                     iconPermission = getResources().getDrawable(R.drawable.set_wallpaper_icon);
                                     permesso.setIcon(iconPermission);
                                     permControl = pm.checkPermission("android.permission.SET_WALLPAPER", packageName);
-                                    System.out.println("VALORE GGGGG: " + permControl);
                                     switch (permControl) {
                                         case PackageManager.PERMISSION_GRANTED:
-                                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                                             permesso.setCheckPermission(grant);
                                             permesso.setContainerVisible(View.VISIBLE);
                                             break;
                                         case PackageManager.PERMISSION_DENIED:
-                                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                                             permesso.setCheckPermission(denied);
                                             permesso.setContainerVisible(View.INVISIBLE);
                                             break;
@@ -971,15 +834,12 @@ public class AppDetails extends Activity {
                         continue;
                     }
                     permissionControl = pm.checkPermission(requestedPermissions[j], packageName);
-                    System.out.println("VALORE GGGGG: " + permissionControl);
                     switch (permissionControl) {
                         case PackageManager.PERMISSION_GRANTED:
-                            System.out.println("1234 PERMESSO GIA' CONCESSO!!!");
                             permesso.setCheckPermission(grant);
                             permesso.setContainerVisible(View.VISIBLE);
                             break;
                         case PackageManager.PERMISSION_DENIED:
-                            System.out.println("1234 PERMESSO NON CONCESSO!!!");
                             permesso.setCheckPermission(denied);
                             permesso.setContainerVisible(View.INVISIBLE);
                             break;
@@ -995,8 +855,6 @@ public class AppDetails extends Activity {
     public void denyPermission(View v) {
         int position = Integer.parseInt(v.getTag().toString());
         perm = arrayAdapterDescription.getItem(position);
-        dialog = ProgressDialog.show(AppDetails.this, "",
-                "Caricamento. Attendere...", true);
         if(perm.getProtectionLevel() == PermissionInfo.PROTECTION_NORMAL){                          //SE IL PERMESSO E' UN PERMESSO NORMALE
             final AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1004,8 +862,8 @@ public class AppDetails extends Activity {
             } else {
                 builder = new AlertDialog.Builder(this);
             }
-            builder.setTitle("PERMESSO NORMALE")
-                    .setMessage("Eliminando questo permesso l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare?")
+            builder.setTitle("ELIMINAZIONE PERMESSO")
+                    .setMessage("Con questa azione il permesso verrà eliminato per cui l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare?")
                     .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -1017,40 +875,23 @@ public class AppDetails extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Toast.makeText(getApplicationContext(), "Azione annullata",Toast.LENGTH_LONG).show();
-                            finish();
                         }
                     })
                     .show();
         }
         else {
-            Intent mainIntent = new Intent(Intent.ACTION_MAIN,null);
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-            List<ResolveInfo> listapp = pm.queryIntentActivities(mainIntent,0);
-            Collections.sort(listapp, new ResolveInfo.DisplayNameComparator(pm));
-            for (ResolveInfo temp : listapp) {
-                Log.v("my logs", "package and activity name = "
-                        + temp.activityInfo.packageName + "    "
-                        + temp.activityInfo.name);
-                if(temp.activityInfo.packageName.equalsIgnoreCase(packageName)){
-                    Uri uri = Uri.parse("www.google.com");
-
-                    break;
-                }
-            }
-
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             Uri uri = Uri.fromParts("package", packageName, null);
             intent.setData(uri);
             startActivity(intent);
-            dialog.dismiss();
             finish();
-            //AppDetails.this.StartUpdateAPK();
         }
-
     }
 
     private void StartUpdateAPK() {                                                                 //Avvio UpdateApk con Thread
+        dialog = ProgressDialog.show(AppDetails.this, "",
+                "Caricamento. Attendere...", true);
         this.update = true;
         this._taskHandler1.post(new Runnable() {                                                            //CREAZIONE PROCESSO
             public void run() {
@@ -1067,18 +908,11 @@ public class AppDetails extends Activity {
 
     private void UpdateAPK() {                                                      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!AVVIOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         RWFile rwfile = new RWFile();                                               //CLASSE PER LETTURA,SCRITTURA,GENERAZIONE,COPIA DI UN FILE
-        System.out.println("Entriiii??");
         for (int i = 0; i < this.permls.size(); i++) {
-            System.out.println("HAI FATTO????: " + this.permls.size());
-            System.out.println("okkkkk????: " + this.permls.get(i));
-
-            System.out.println("Nome Per: "+this.permls.get(i).getName_());
             if(perm.getName().contains("permission")){
                 int index = perm.getName().lastIndexOf("ssion.");
-                System.out.println("COSALOOOOOO O OO O: "+perm.getName().replace(perm.getName().substring(0,index+6),"")+" a _"+index);
 
                 if(this.permls.get(i).getName_().equalsIgnoreCase(perm.getName().replace(perm.getName().substring(0,index+6),""))){
-                    System.out.println("ENTRATOOOO");
                     this.xmlfile.RemovePermission(i);                                           //Rimozione del permesso da XMLFILE
                 }
             }
@@ -1088,20 +922,16 @@ public class AppDetails extends Activity {
         //CREAZIONE BACKUP APK
         if (this.apkfile.length() > 7) {
             new File(this.pathBackup).mkdirs();                                                                //CREA LA DIRECTORY DI BACKUP
-            System.out.println("CREAZIONEEE: " + this.apkfile);
             apkBackup = this.pathBackup + rwfile.GenFilename(this.apkfile, this.pathBackup, "");
             try {
                 rwfile.CopyFile(this.apkfile, apkBackup);         //Copia del file "apk" originale nella directory del backup
-                System.out.println("COPIA AVVENUTAAAAA");
             } catch (Exception e) {
             }
         }
         if (new Unzip().Unzip(this.apkfile, this.path + this.pathTmp).booleanValue()) {                             //Se il valore è true
             new File(this.path + this.pathTmp + "AndroidManifest.xml").delete();                                    //Cancella la directory temp con il Manifest
-            System.out.println("CANCELLAZIONE AVVENUTA");
             if (this.xmlfile.WriteFile(this.path + this.pathTmp + "AndroidManifest.xml").booleanValue()) {          //Se RWFile ha effettuato la scrittura del file
                 new UpdateSHAFiles(this.path + this.pathTmp, getPackageInfo().versionName, getString(R.string.app_name)).Update();          //versioName -> il nome della versione del pacchetto; getString() = "Nome App"
-                System.out.println("SCRITTURA AVVENUTA");
 
                 new File(this.pathNew).mkdirs();                                                //Crea directory /sdcard/at.plop.PermissionRemover/new
                 String newfilename = this.path +this.pathTmp + rwfile.GenFilename(this.apkfile, this.path +this.pathTmp, " new");                     //NUOVO NOME DEL FILE
@@ -1128,7 +958,6 @@ public class AppDetails extends Activity {
                 RemoveTempDir();
                 this.newapkfile = apk_signed;
                 String packageName = GetPackageName(this.apkfile);
-                System.out.println("PACK NAME::  " + packageName);
                 if (packageName.equals("")) {
                     InstallPackage(this.newapkfile);                                                                //INSTALLAZIONE PACCHETTO
                     finish();                                                                                       //SI CHIUDE L'ACTIVITY

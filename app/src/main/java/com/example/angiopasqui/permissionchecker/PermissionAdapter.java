@@ -1,5 +1,6 @@
 package com.example.angiopasqui.permissionchecker;
 
+import android.content.pm.PermissionInfo;
 import android.widget.ArrayAdapter;
 import android.content.Context;
 import android.util.Log;
@@ -41,13 +42,17 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         ImageView checkPermission;
         LinearLayout containerDeny;
         ImageView denyButton;
+        LinearLayout containerAllow;
+        ImageView allowButton;
 
         iconPermission = (ImageView) v.findViewById(R.id.iconPermssion);
         namePermission = (TextView) v.findViewById(R.id.namePermission);
         permissionDescription = (TextView) v.findViewById(R.id.descriptionPermission);
         checkPermission = (ImageView) v.findViewById(R.id.checkGRANT_DENIED);
-        containerDeny = (LinearLayout) v.findViewById(R.id.containerAllowDeny);
+        containerDeny = (LinearLayout) v.findViewById(R.id.containerDeny);
         denyButton = (ImageView) v.findViewById(R.id.denyButton);
+        containerAllow = (LinearLayout) v.findViewById(R.id.containerAllow);
+        allowButton = (ImageView) v.findViewById(R.id.allowButton);
 
         iconPermission.setImageDrawable(perm.getIcon());
         namePermission.setText(perm.getName());
@@ -57,11 +62,19 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
 
         if(perm.getContainerVisible() == View.VISIBLE){
             containerDeny.setVisibility(View.VISIBLE);
+            containerAllow.setVisibility(View.INVISIBLE);
         } else {
             containerDeny.setVisibility(View.INVISIBLE);
+            if(perm.getProtectionLevel() == PermissionInfo.PROTECTION_NORMAL){
+                containerAllow.setVisibility(View.INVISIBLE);
+            }
+            else {
+                containerAllow.setVisibility(View.VISIBLE);
+            }
         }
 
         denyButton.setTag(position);
+        allowButton.setTag(position);
 
         return v;
     }
