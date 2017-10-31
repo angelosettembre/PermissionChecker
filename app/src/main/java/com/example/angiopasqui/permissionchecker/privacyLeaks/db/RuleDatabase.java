@@ -141,7 +141,7 @@ public class RuleDatabase {
             Log.d(TAG, "loadBlockedHosts: Not loading, disabled.");
         } else {
             for (Configuration.Item item : config.hosts.items) {
-                System.out.print("STAMPAAAA"+config.hosts.items.toString());
+                System.out.println("STAMPAAAA "+item.toString());
                 if (Thread.interrupted()) {
                     throw new InterruptedException("Interrupted");
                 }

@@ -74,6 +74,7 @@ public class RuleDatabaseUpdateTask extends AsyncTask<Void, Void, Void> {
         ExecutorService executor = Executors.newCachedThreadPool();
 
         for (Configuration.Item item : configuration.hosts.items) {
+            Log.d("DEBUG","metodo doInbackground "+item.toString());
             RuleDatabaseItemUpdateRunnable runnable = getCommand(item);
             if (runnable.shouldDownload())
                 executor.execute(runnable);

@@ -62,6 +62,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
@@ -104,6 +105,7 @@ public class LocalVpnService2 extends VpnService implements Handler.Callback,Dns
     private  ParcelFileDescriptor  fileDescriptor;
     final ArrayList<InetAddress> upstreamDnsServers = new ArrayList<>();
     public static ArrayList<AppLeak> listaAppLeaks;
+    public static int countPacket = 0;
 
     @Override
     public void onCreate() {
@@ -575,17 +577,31 @@ public class LocalVpnService2 extends VpnService implements Handler.Callback,Dns
             for(AppLeak applicazione: listaAppLeaks){
                 String compare = applicazione.getHostname().substring(6);
 
-                if(applicazione.getHostname().substring(6).equals(hostname)){
-                    duplicate = true;
-                    break;
+                if(applicazione.getAppName().equals(foregroundAppPackageInfo.applicationInfo.loadLabel(pm).toString())) {
+                    if (applicazione.getHostname().substring(6).equals(hostname)) {
+                        duplicate = true;
+                        break;
+                    }
                 }
             }
             if(!duplicate) {
-                app.setHostname("Host: " + hostname);
+                if (dnsPacketProxy.getRuleDatabase().isBlocked(hostname.toLowerCase(Locale.ENGLISH))) {
+                    app.setBlocked(true);
+                    app.setHostname("Host: " + hostname);
+                    //app.setHostname("Host:block " + hostname );
+                }
+                else {
+                    app.setHostname("Host: " + hostname);
+                }
                 listaAppLeaks.add(app);
+                countPacket++;
             }
 
         }
+    }
+
+    public static int getCountPacket(){
+        return countPacket;
     }
 
 
@@ -719,6 +735,7 @@ public class LocalVpnService2 extends VpnService implements Handler.Callback,Dns
 
     public void stopVPN(){
         Log.d("DEBUG","stopVPN");
+        countPacket = 0;
         mInterruptFd = FileHelper.closeOrWarn(mInterruptFd, TAG, "stopThread: Could not close interruptFd");
         mThread.interrupt();
         /*try {

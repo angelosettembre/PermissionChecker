@@ -78,6 +78,10 @@ public class DnsPacketProxy {
         this.upstreamDnsServers = upstreamDnsServers;
     }
 
+    public RuleDatabase getRuleDatabase(){
+        return ruleDatabase;
+    }
+
     /**
      * Handles a responsePayload from an upstream DNS server
      *

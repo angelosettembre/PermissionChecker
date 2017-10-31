@@ -49,6 +49,8 @@ public class Configuration {
         if (config.whitelist.items.isEmpty()) {
             config.whitelist = new Whitelist();
             config.whitelist.items.add("com.android.vending");
+            Log.d("DEBUG","config.whitelist.items.isEmpty()");
+
         }
 
         if (config.version > VERSION)
@@ -71,6 +73,15 @@ public class Configuration {
 
         public boolean isDownloadable() {
             return location.startsWith("https://") || location.startsWith("http://");
+        }
+
+        @Override
+        public String toString() {
+            return "Item{" +
+                    "title='" + title + '\'' +
+                    ", location='" + location + '\'' +
+                    ", state=" + state +
+                    '}';
         }
     }
 

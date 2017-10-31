@@ -33,6 +33,8 @@ public final class FileHelper {
      * the same name in the assets.
      */
     public static InputStream openRead(Context context, String filename) throws IOException {
+        Log.d("DEBUG","metodo openRead FileHelper");
+
         try {
             return context.openFileInput(filename);
         } catch (FileNotFoundException e) {
@@ -71,7 +73,7 @@ public final class FileHelper {
         else {
             stream = FileHelper.openRead(context, name);
             if(stream != null){
-                Log.d("DEBUG","FILE TROVATOOOOO");
+                Log.d("DEBUG","defaultsOnly false FILE TROVATOOOOO");
             }
         }
         return Configuration.read(new InputStreamReader(stream));

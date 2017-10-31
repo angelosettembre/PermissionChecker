@@ -35,10 +35,26 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
             android:layout_width="wrap_content"
-            android:text="hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+            android:text="host"
             android:layout_alignLeft="@+id/nameApp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/nameApp"/>
+
+        <TextView
+            android:id="@+id/blocked"
+            android:layout_marginTop="5dp"
+
+            android:layout_width="wrap_content"
+            android:layout_marginRight="30dp"
+            android:text="BLOCCATO"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:textColor="#f10000"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
     </RelativeLayout>
 
 </RelativeLayout>

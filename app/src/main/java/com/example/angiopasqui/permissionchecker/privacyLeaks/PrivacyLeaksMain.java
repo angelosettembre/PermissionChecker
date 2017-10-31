@@ -20,9 +20,13 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.example.angiopasqui.permissionchecker.R;
+
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -41,20 +45,23 @@ public class PrivacyLeaksMain extends Activity {
     private static Context context = null;
     private static Activity activity = null;
     private static String TAG = "DEBUG";
-    private SharedPreferences preferences;
-    private AssetManager am;
     public ListView listView;
     public AppLeaksAdapter adapter;
+    public int numPacket;
+    private TextView countPacket;
+    private TextView blocked;
 
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("DEBUG","onCreate Activity");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.privacy_main);
+        countPacket = (TextView) findViewById(R.id.countPack);
         context = getBaseContext();
         activity = this;
-        am = context.getAssets();
 
+        View v = getLayoutInflater().inflate(R.layout.listappleaks_detail_item,null);
+        blocked = (TextView) v.findViewById(R.id.blocked);
         listView = (ListView)findViewById(R.id.listAppLeaks);
 
         adapter = new AppLeaksAdapter(this,R.layout.listappleaks_detail_item);
@@ -80,8 +87,9 @@ public class PrivacyLeaksMain extends Activity {
     @Override
     protected void onResume() {
         Log.d("DEBUG","onResume Activity");
+        adapter = new AppLeaksAdapter(this,R.layout.listappleaks_detail_item);
         addAppInApapter();
-
+        listView.setAdapter(adapter);
         super.onResume();
     }
 
@@ -92,5 +100,7 @@ public class PrivacyLeaksMain extends Activity {
                 adapter.add(appLeak);
             }
         }
+        countPacket.setText(String.valueOf(LocalVpnService2.getCountPacket()));
+        System.out.println("Testoosoasos: "+LocalVpnService2.getCountPacket());
     }
 }

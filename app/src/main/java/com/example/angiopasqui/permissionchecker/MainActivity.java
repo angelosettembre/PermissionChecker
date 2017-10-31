@@ -21,10 +21,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.angiopasqui.permissionchecker.privacyLeaks.Configuration;
+import com.example.angiopasqui.permissionchecker.privacyLeaks.FileHelper;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.GlobalState;
-import com.example.angiopasqui.permissionchecker.privacyLeaks.LocalVpnService;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.LocalVpnService2;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.PrivacyLeaksMain;
+import com.example.angiopasqui.permissionchecker.privacyLeaks.db.RuleDatabaseUpdateTask;
 
 public class MainActivity extends Activity {
     public static ImageView icon_lock_unlcok;
@@ -38,6 +40,7 @@ public class MainActivity extends Activity {
     public static Context context;
     private SharedPreferences preferences;
     public static String TAG="DEBUG";
+    public static Configuration config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,8 @@ public class MainActivity extends Activity {
 
         context = this;
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        config = FileHelper.loadCurrentSettings(this);
+
 
         icon_lock_unlcok = (ImageView) findViewById(R.id.icon_lock_unlock);
         textMonitoring = (TextView) findViewById(R.id.monitoring);
@@ -60,8 +65,14 @@ public class MainActivity extends Activity {
         stop = (ImageView) findViewById(R.id.stop);
         goPrivacyLeaksActivity = (Button) findViewById(R.id.goPrivacyLeaksActivity);
 
+        refresh();
+
         if (preferences.getString("vpn abilitata","").equalsIgnoreCase("si")) {    //SE LA VPN E' AVVIATA
             Log.d("DEBUG","SHARED PREFERENCES");
+
+            text_init_Monitoring.setText(R.string.stop_monitoring);
+            textMonitoring.setText(R.string.monitoring_active);
+            icon_lock_unlcok.setImageResource(R.drawable.lock_open);
             start.setVisibility(View.INVISIBLE);
             stop.setVisibility(View.VISIBLE);
         }
@@ -144,6 +155,13 @@ public class MainActivity extends Activity {
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
+    private void refresh() {
+        Log.d("DEBUG","metodo refresh");
+
+        final RuleDatabaseUpdateTask task = new RuleDatabaseUpdateTask(getApplicationContext(), config, true);
+
+        task.execute();
+    }
 
     public static boolean vpnController(boolean start, Activity mActivity) {      //METODO PER IL CONTROLLER PER LA VPN (viene passato il valore booleano start, e l'activity principale)
         if(start ){                    //SE LA VPN NON E' AVVIATA
@@ -198,6 +216,7 @@ public class MainActivity extends Activity {
     protected static void launchVpnService(Activity mActivity) {
         if(hasPermission()) {
             Log.d("DEBUG", "LANCIO VPN!!!!!!!!!!!!!!!!!!!!!!");
+
 
             text_init_Monitoring.setText(R.string.stop_monitoring);
             textMonitoring.setText(R.string.monitoring_active);

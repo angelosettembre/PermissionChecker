@@ -10,14 +10,17 @@ public class AppLeak {
     private String appName;
     private Drawable icon;
     private String hostname;
+    private boolean blocked;
 
     public AppLeak() {
     }
 
-    public AppLeak(String appName, Drawable icon, String hostname) {
+    public AppLeak(String appName, Drawable icon, String hostname, boolean blocked) {
         this.appName = appName;
         this.icon = icon;
         this.hostname = hostname;
+        this.blocked = blocked;
+
     }
 
     public String getAppName() {
@@ -42,5 +45,14 @@ public class AppLeak {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

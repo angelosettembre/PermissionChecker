@@ -80,6 +80,8 @@ class RuleDatabaseItemUpdateRunnable implements Runnable {
      */
     @Override
     public void run() {
+        Log.d("DEBUG","metodo run RuleDatabaseItemUpdateRunnable");
+
         try {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         } catch (UnsatisfiedLinkError e) {
@@ -141,6 +143,8 @@ class RuleDatabaseItemUpdateRunnable implements Runnable {
      */
     @NonNull
     HttpURLConnection getHttpURLConnection(File file, SingleWriterMultipleReaderFile singleWriterMultipleReaderFile, URL url) throws IOException {
+        Log.d("DEBUG","metodo getHttpURLConnection RuleDatabaseItemUpdateRunnable");
+
         HttpURLConnection connection = internalOpenHttpConnection(url);
         connection.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
         connection.setReadTimeout(READ_TIMEOUT_MILLIS);
