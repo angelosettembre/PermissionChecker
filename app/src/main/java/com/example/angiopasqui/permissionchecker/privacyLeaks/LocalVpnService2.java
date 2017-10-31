@@ -572,20 +572,6 @@ public class LocalVpnService2 extends VpnService implements Handler.Callback,Dns
         if(!foregroundAppPackageInfo.packageName.contains("permissionchecker") && hostname.contains(".")) {
             duplicate = false;
 
-           /*for(int i=0; i<listaAppLeaks.size(); i++){
-               System.out.println("DENTRO ELEMENTO "+listaAppLeaks.get(i).getHostname());
-               if(duplicate)
-                   break;
-               AppLeak applicazione = listaAppLeaks.get(i);
-               for(int j=i+1; j<listaAppLeaks.size(); j++){
-                   AppLeak ap = listaAppLeaks.get(j);
-                   if(applicazione.getHostname().equals(ap.getHostname())){
-                       System.out.println("DENTRO DUPLICATOOO");
-                       duplicate = true;
-                       break;
-                   }
-               }
-           }*/
             for(AppLeak applicazione: listaAppLeaks){
                 String compare = applicazione.getHostname().substring(6);
 
@@ -604,6 +590,7 @@ public class LocalVpnService2 extends VpnService implements Handler.Callback,Dns
 
 
     public static ArrayList<AppLeak> getListaAppLeaks(){
+
         return listaAppLeaks;
     }
 

@@ -140,6 +140,9 @@
         android:layout_below="@id/quartoLinear"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:src="@drawable/stop_icon"
+        android:visibility="invisible"
+
         />
 
 </RelativeLayout>

@@ -6,35 +6,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/init_monitoring"
-        android:textStyle="bold"
-        android:textSize="20dp"
-        android:textColor="#ff8c00"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <ToggleButton
-        android:id="@+id/toggleButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:textColor="@color/light_gray_font"
-        android:background="@drawable/toggleselector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-
-    <TextView
         android:id="@+id/titleList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LISTA APP MONITORATE"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:layout_marginTop="10dp"
-
-        android:layout_below="@id/toggleButton"
         android:layout_marginLeft="10dp"
         />
 
