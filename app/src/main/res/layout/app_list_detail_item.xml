@@ -56,7 +56,6 @@
                 android:layout_below="@id/descriptionPermission"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/deny"
                 android:clickable="true"
                 android:onClick="denyPermission"
                 />
@@ -68,7 +67,6 @@
                 android:layout_below="@id/descriptionPermission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NEGA"
                 />
         </LinearLayout>
 

@@ -67,6 +67,10 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
                 denyText.setText("ELIMINA");
                 denyButton.setImageResource(R.drawable.icon_error);
             }
+            else{
+                denyText.setText("NEGA");
+                denyButton.setImageResource(R.drawable.deny);
+            }
             containerAllow.setVisibility(View.INVISIBLE);
         } else {
             containerDeny.setVisibility(View.INVISIBLE);
