@@ -153,20 +153,6 @@ public class DnsPacketProxy {
 
         InetAddress destAddr = translateDestinationAdress(parsedPacket);    //Chiamata metodo per tradurre l'indirizzo di destinazione del pacchetto
 
-        //PcapNetworkInterface nif = Pcaps.getDevByAddress(destAddr);
-        //PcapHandle handle = nif.openLive(65536, PcapNetworkInterface.PromiscuousMode.PROMISCUOUS, 10);
-        //org.pcap4j.packet.Packet packet = handle.getNextPacketEx();
-        /*try{
-
-            TCPPacket tpacket = new TCPPacket(0,packetData);
-            System.out.println("PACCHETTO TCP "+tpacket.toString());
-
-
-        }catch (Exception e ){
-            e.printStackTrace();
-        }*/
-
-
         try {
             TcpPacket tcp = parsedPacket.get(TcpPacket.class);
             System.out.println("PACCHETTO tcp " + tcp.toString());

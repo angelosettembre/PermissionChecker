@@ -94,13 +94,13 @@ public class PrivacyLeaksMain extends Activity {
     }
 
     public void addAppInApapter(){
-        List<AppLeak> list = LocalVpnService2.getListaAppLeaks();
+        List<AppLeak> list = LocalVpnService.getListaAppLeaks();
         if(list!=null) {
             for (AppLeak appLeak : list) {
                 adapter.add(appLeak);
             }
         }
-        countPacket.setText(String.valueOf(LocalVpnService2.getCountPacket()));
-        System.out.println("Testoosoasos: "+LocalVpnService2.getCountPacket());
+        countPacket.setText(String.valueOf(LocalVpnService.getCountPacket()));
+        System.out.println("Testoosoasos: "+LocalVpnService.getCountPacket());
     }
 }

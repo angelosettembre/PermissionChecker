@@ -1,40 +1,79 @@
 package com.example.angiopasqui.permissionchecker.privacyLeaks;
 
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Notification;
 import android.app.PendingIntent;
+import android.app.usage.UsageEvents;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
+import android.system.ErrnoException;
+import android.system.Os;
+import android.system.OsConstants;
+import android.system.StructPollfd;
 import android.util.Log;
 import android.widget.Toast;
-import android.app.Notification;
 
 import com.example.angiopasqui.permissionchecker.R;
 
+
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapNativeException;
+import org.pcap4j.packet.IpPacket;
+
+import java.io.EOFException;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.Selector;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Locale;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by passet on 19/10/2017.
  */
 
-public class LocalVpnService extends VpnService implements Handler.Callback {
+public class LocalVpnService extends VpnService implements Handler.Callback,DnsPacketProxy.EventLoop {
 
     private static final String VPN_ADDRESS = "192.168.0.1";
     private static final String VPN_ROUTE = "0.0.0.0"; // Intercept everything
@@ -48,15 +87,42 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
     static SharedPreferences preferences ;
     static SharedPreferences.Editor editor ;
 
+    /* If we had a successful connection for that long, reset retry timeout */
+    private static final long RETRY_RESET_SEC = 60;
+    private static final int MIN_RETRY_TIME = 5;
+    private static final int MAX_RETRY_TIME = 2 * 60;
+    private final VpnService vpnService = this;
+    private final VpnWatchdog vpnWatchDog = new VpnWatchdog();
+    private FileDescriptor mInterruptFd = null;
+    private FileDescriptor mBlockFd = null;
+    private final DnsPacketProxy dnsPacketProxy = new DnsPacketProxy(this);
+    private final Queue<byte[]> deviceWrites = new LinkedList<>();
+    private final WospList dnsIn = new WospList();
+    private static final int DNS_MAXIMUM_WAITING = 1024;
+    private static final long DNS_TIMEOUT_SEC = 10;
+    public static Configuration config;
+
+    private  ParcelFileDescriptor  fileDescriptor;
+    final ArrayList<InetAddress> upstreamDnsServers = new ArrayList<>();
+    public static ArrayList<AppLeak> listaAppLeaks;
+    public static int countPacket = 0;
+
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate Servizio VPN");
+
+        listaAppLeaks = new ArrayList<AppLeak>();
+
+
         if(GlobalState.VPN_ENABLED) {
             super.onCreate();
+
+
+
             /*if (mHandler == null) {        // The handler is only used to show messages.
                 mHandler = new Handler(this);
             }*/
 
-            Log.d(TAG, "onCreate Servizio VPN");
 
             pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, LocalVpnService.class), PendingIntent.FLAG_UPDATE_CURRENT);
         }
@@ -70,32 +136,6 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
 
     }
 
-    public static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
-
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) { } // for now eat exceptions
-        return "";
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -115,169 +155,54 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
                 @Override
                 public void run() {
                     try {
-                        //a. Configure the TUN and get the interface.
-                        Log.d("DEBUG", "runThread");
+                        dnsPacketProxy.initialize(vpnService, upstreamDnsServers);
+                        vpnWatchDog.initialize(FileHelper.loadCurrentSettings(vpnService).watchDog);
 
-                        DatagramChannel tunnel = DatagramChannel.open();
-                        protect(tunnel.socket());
-
-                        tunnel.connect(new InetSocketAddress("10.0.0.1", 55555));
-
-                        tunnel.configureBlocking(false);
-
-                        Log.d(TAG,"indrizzo ip :"+getIPAddress(true));
-                        builder.addAddress(getIPAddress(true),24);
-
-                        //builder.addAddress("10.0.8.1", 32);                              //Configurazione VPN
-                        builder.addRoute(VPN_ROUTE, 0);
-                        builder.setMtu(16000);                                              //Metodo che permette di settare il numero massimo di trasmissioni sull'interfaccia VPN --> 16000
-
-                        //builder.addDnsServer("8.8.8.8");
-                        vpnInterface = builder.setSession(getString(R.string.app_name)).establish();                //Lancio VPN
-
-                        FileInputStream in = new FileInputStream(vpnInterface.getFileDescriptor());
-                        ByteBuffer packet = ByteBuffer.allocate(32767);
-
-
-                        FileOutputStream out = new FileOutputStream(vpnInterface.getFileDescriptor());
-
-                        int timer = 0;
-                        Log.d(TAG, "tunnel open:" + tunnel.isOpen() + " connected:" + tunnel.isConnected());
-
-                        int length;
-                        String destIP;
-
-
-                        //e. Use a loop to pass packets.
-                        while (true) {
-                            //get packet with in
-                            //put packet to tunnel
-                            //get packet form tunnel
-                            //return packet with out
-
-                          /*  //  PRIMA SOLUZIONE
-                            // Assume that we did not make any progress in this iteration.
-                            boolean idle = true;
-                            // Read the outgoing packet from the input stream.
-                            int length = 0;
-                            try {
-                                length = in.read(packet.array());
-
-                                if (length > 0) {
-
-                                    Log.d(TAG, "got outgoing packet; length=" + length);
-                                    TCP_IP TCP_debug = new TCP_IP(packet);
-                                    TCP_debug.debug();
-                                    destIP = TCP_debug.getDestination();
-
-                                    InetAddress address = InetAddress.getByName(destIP);
-
-                                    System.out.println("host " + address.getHostAddress());
-                                    System.out.println("host name " + address.getHostName());
-
-                                    // Write the outgoing packet to the tunnel.
-                                    packet.limit(length);
-                                    tunnel.write(packet);
-                                    packet.clear();
-
-                                    // There might be more outgoing packets.
-                                    idle = false;
-
-                                    // If we were receiving, switch to sending.
-                                    if (timer < 1) {
-                                        timer = 1;
-                                    }
-                                }
-
-                                // Read the incoming packet from the mTunnel.
-                                length = tunnel.read(packet);
-                                if (length > 0) {
-
-                                    Log.d(TAG, "got inbound packet; length=" + length);
-                                    // Write the incoming packet to the output stream.
-
-                                    out.write(packet.array(), 0, length);
-                                    packet.clear();
-
-                                    // There might be more incoming packets.
-                                    idle = false;
-
-                                    // If we were sending, switch to receiving.
-                                    if (timer > 0) {
-                                        timer = 0;
-                                    }
-                                }
-
-                                // If we are idle or waiting for the network, sleep for a
-                                // fraction of time to avoid busy looping.
-                                if (idle) {
-                                    Thread.sleep(100);
-
-                                    // Increase the timer. This is inaccurate but good enough,
-                                    // since everything is operated in non-blocking mode.
-                                    timer += (timer > 0) ? 100 : -100;
-
-                                    // We are receiving for a long time but not sending.
-                                    if (timer < -15000) {
-                                        // Switch to sending.
-                                        timer = 1;
-                                    }
-
-                                    // We are sending for a long time but not receiving.
-                                    if (timer > 20000) {
-                                        //throw new IllegalStateException("Timed out");
-                                        //Log.d(TAG,"receiving timed out? timer=" + timer);
-                                    }
-                                }
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            */
-
-
-                            //SECONDA SOLUZIONE
-                            while ((length = in.read(packet.array())) > 0) {
-
-
-                                packet.limit(length);
-                                Log.d(TAG, "Total Length:" + tunnel.socket().getInetAddress());
-
-                                tunnel.write(packet);
-                                packet.flip();
-
-                                TCP_IP TCP_debug = new TCP_IP(packet);
-                                TCP_debug.debug();
-                                destIP = TCP_debug.getDestination();
-
-                                InetAddress address = InetAddress.getByName(destIP);
-                                System.out.println("host " + address.getHostAddress());
-                                System.out.println("host name " + address.getHostName());
-
-
-                                out.write(packet.array(), 0, length);
-                                packet.clear();
-
-                                //Thread.sleep(100);
-                            }
-
-
-                            //sleep is a must
-                            //Log.d("DEBUG","SLEEEP");
-                            Thread.sleep(100);
-                        }
-                    } catch (Exception e) {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
-                    } finally {
+                        return;
+                    }
+
+
+                    int retryTimeout = MIN_RETRY_TIME;
+
+                    while(true){
+                        long connectTimeMillis = 0;
                         try {
-                            if (vpnInterface != null) {       //All'uscita del while, se la vpnInterface esiste, si mette a null
-                                closeInterface();
+                            connectTimeMillis = System.currentTimeMillis();
+
+                            // If the function returns, that means it was interrupted
+                            runVpn();                               //Chiamata metodo per eseguire la VPN
+
+                            if (System.currentTimeMillis() - connectTimeMillis >= RETRY_RESET_SEC * 1000) {
+                                Log.i(TAG, "Resetting timeout");
+                                retryTimeout = MIN_RETRY_TIME;
                             }
-                        } catch (Exception e) {
+
+                            try {
+                                Thread.sleep((long) retryTimeout * 1000);
+                            } catch (InterruptedException e) {
+                                break;
+                            }
+
+                            if (retryTimeout < MAX_RETRY_TIME)
+                                retryTimeout *= 2;
+
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                            break;
+
+                        }catch (VpnNetworkException e){
+                            Log.w(TAG, "Network exception in vpn thread, ignoring and reconnecting", e);
+
+                        }catch (Exception e){
                             e.printStackTrace();
                         }
+
                     }
+
                 }
+
             }, "MyVpnRunnable");
 
             instance = this;
@@ -291,11 +216,442 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
 
     }
 
+    private void runVpn() throws InterruptedException, ErrnoException, IOException, VpnNetworkException, PcapNativeException, TimeoutException, NotOpenException {
+        Log.d("DEBUG","metodo runVpn LocalVpnService");
+        // Allocate the buffer for a single packet.
+        byte[] packet = new byte[32767];
+
+        // A pipe we can interrupt the poll() call with by closing the interruptFd end
+        FileDescriptor[] pipes = Os.pipe();
+        mInterruptFd = pipes[0];
+        mBlockFd = pipes[1];
+
+        // Authenticate and configure the virtual network interface.
+
+        // CHIAMATA AL METODO PER CONFIGURARE LA VPN
+        try (ParcelFileDescriptor fd = configure()) {
+
+            fileDescriptor = fd;
+            // Read and write views of the tun device
+            FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());    //Lettura inputStram
+            FileOutputStream outFd = new FileOutputStream(fileDescriptor.getFileDescriptor());        //Lettura outputStream
+
+            // We keep forwarding packets till something goes wrong.
+            while (doOne(inputStream, outFd, packet)) ;    //Chiamata al metodo per il forwarding dei PACCHETTI
+                                                            // si esce da questo ciclo quando si ferma la VPN
+
+        } finally {
+            mBlockFd = FileHelper.closeOrWarn(mBlockFd, TAG, "runVpn: Could not close blockFd");
+        }
+    }
+
+    private ParcelFileDescriptor configure()throws VpnNetworkException{
+        Log.d("DEBUG","metodo configure LocalVpnService");
+        Log.d(TAG, "Configuring" + this);
+        Configuration config = FileHelper.loadCurrentSettings(vpnService);  //Lettura settaggi dal file json
+
+        // Get the current DNS servers before starting the VPN
+        Set<InetAddress> dnsServers = getDnsServers(vpnService);          //Si ottengono i server
+        Log.d(TAG, "Got DNS servers = " + dnsServers);
+
+        // Configure a builder while parsing the parameters.
+        VpnService.Builder builder = vpnService.new Builder();     //Creazione Builder VPN
+
+        String format = null;
+
+        // Determine a prefix we can use. These are all reserved prefixes for example
+        // use, so it's possible they might be blocked.
+        for (String prefix : new String[]{"192.0.2", "198.51.100", "203.0.113"}) {
+            try {
+                builder.addAddress(prefix + ".1", 24);    //Inserimento indirizzo
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+
+            format = prefix + ".%d";
+            break;
+        }
+
+        Log.d("DEBUG","INDIRIZZO VPN: "+format);
+
+        byte[] ipv6Template = new byte[]{32, 1, 13, (byte) (184 & 0xFF), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+        if (format == null) {
+            Log.d(TAG, "configure: Could not find a prefix to use, directly using DNS servers");
+            builder.addAddress("192.168.50.1", 24);
+        }
+
+        // Add all knows DNS servers
+        for (InetAddress addr : dnsServers) {
+            try {
+                newDNSServer(builder, format, ipv6Template, addr);    //Chiamata metodo newDNSServer
+            } catch (Exception e) {
+                Log.e(TAG, "configure: Cannot add server:", e);
+            }
+        }
+
+        builder.setBlocking(true);
+
+        // Allow applications to bypass the VPN
+        builder.allowBypass();
+
+        // Explictly allow both families, so we do not block
+        // traffic for ones without DNS servers (issue 129).
+        builder.allowFamily(OsConstants.AF_INET);
+        builder.allowFamily(OsConstants.AF_INET6);
+
+        //configurePackages(builder, config);           //Chiamata metodo configurePackages
+
+        // Create a new interface using the builder and save the parameters.
+        // Creazione interfaccia
+        ParcelFileDescriptor pfd = builder.setSession(getString(R.string.app_name)).establish();
+        Log.i(TAG, "Configured");
+        return pfd;
+    }
+
+
+    void newDNSServer(VpnService.Builder builder, String format, byte[] ipv6Template, InetAddress addr) throws UnknownHostException {
+        Log.d("DEBUG","metodo newDNSServer AdVpnThread");
+
+        // Optimally we'd allow either one, but the forwarder checks if upstream size is empty, so
+        // we really need to acquire both an ipv6 and an ipv4 subnet.
+        if (addr instanceof Inet6Address && ipv6Template == null) {                //Se l'indirizzo è IPV6
+            Log.d(TAG, "newDNSServer: Ignoring DNS server " + addr);
+        } else if (addr instanceof Inet4Address && format == null) {
+            Log.d(TAG, "newDNSServer: Ignoring DNS server " + addr);
+        } else if (addr instanceof Inet4Address) {                    //Se l'indirizzo è IPV4
+            upstreamDnsServers.add(addr);                             //Inserisci indirizzo
+            String alias = String.format(format, upstreamDnsServers.size() + 1);
+            Log.d(TAG, "configure: Adding DNS Server " + addr + " as " + alias);
+            builder.addDnsServer(alias);                            //Inserimento DNS Server nel Builder
+            builder.addRoute(alias, 32);                            //Inserimento Route
+            vpnWatchDog.setTarget(InetAddress.getByName(alias));
+        } else if (addr instanceof Inet6Address) {                 //Se l'indirizzo è IPV6
+            upstreamDnsServers.add(addr);
+            ipv6Template[ipv6Template.length - 1] = (byte) (upstreamDnsServers.size() + 1);
+            InetAddress i6addr = Inet6Address.getByAddress(ipv6Template);
+            Log.d(TAG, "configure: Adding DNS Server " + addr + " as " + i6addr);
+            builder.addDnsServer(i6addr);
+            vpnWatchDog.setTarget(i6addr);
+        }
+    }
+
+    private static Set<InetAddress> getDnsServers(Context context) throws VpnNetworkException {
+        Log.d("DEBUG","metodo getDnsServers AdVpnThread");
+
+        Set<InetAddress> out = new HashSet<>();
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(VpnService.CONNECTIVITY_SERVICE);
+        // Seriously, Android? Seriously?
+        NetworkInfo activeInfo = cm.getActiveNetworkInfo();
+        if (activeInfo == null)
+            throw new VpnNetworkException("No DNS Server");
+
+        for (Network nw : cm.getAllNetworks()) {
+            NetworkInfo ni = cm.getNetworkInfo(nw);
+            if (ni == null || !ni.isConnected() || ni.getType() != activeInfo.getType()
+                    || ni.getSubtype() != activeInfo.getSubtype())
+                continue;
+            for (InetAddress address : cm.getLinkProperties(nw).getDnsServers())
+                out.add(address);
+        }
+        return out;
+    }
+
+
+    private boolean doOne(FileInputStream inputStream, FileOutputStream outFd, byte[] packet) throws IOException, ErrnoException, InterruptedException, VpnNetworkException, PcapNativeException, TimeoutException, NotOpenException {
+        Log.d("DEBUG","metodo doOne LocalVpnService");
+
+        StructPollfd deviceFd = new StructPollfd();
+        deviceFd.fd = inputStream.getFD();
+        deviceFd.events = (short) OsConstants.POLLIN;
+        StructPollfd blockFd = new StructPollfd();
+        blockFd.fd = mBlockFd;
+        blockFd.events = (short) (OsConstants.POLLHUP | OsConstants.POLLERR);
+
+        if (!deviceWrites.isEmpty())
+            deviceFd.events |= (short) OsConstants.POLLOUT;
+
+        StructPollfd[] polls = new StructPollfd[2 + dnsIn.size()];
+        polls[0] = deviceFd;
+        polls[1] = blockFd;
+        {
+            int i = -1;  //Vengono presi i socket
+            for (WaitingOnSocketPacket wosp : dnsIn) {
+                i++;
+                StructPollfd pollFd = polls[2 + i] = new StructPollfd();
+                pollFd.fd = ParcelFileDescriptor.fromDatagramSocket(wosp.socket).getFileDescriptor();
+                pollFd.events = (short) OsConstants.POLLIN;
+            }
+        }
+
+        Log.d(TAG, "doOne: Polling " + polls.length + " file descriptors");
+        int result = FileHelper.poll(polls, vpnWatchDog.getPollTimeout());
+        if (result == 0) {
+            vpnWatchDog.handleTimeout();
+            return true;
+        }
+        if (blockFd.revents != 0) {
+            Log.i(TAG, "Told to stop VPN");
+            return false;
+        }
+        // Need to do this before reading from the device, otherwise a new insertion there could
+        // invalidate one of the sockets we want to read from either due to size or time out
+        // constraints
+        {
+            int i = -1;
+            Iterator<WaitingOnSocketPacket> iter = dnsIn.iterator();
+            while (iter.hasNext()) {
+                i++;
+                WaitingOnSocketPacket wosp = iter.next();
+                if ((polls[i + 2].revents & OsConstants.POLLIN) != 0) {
+                    Log.d(TAG, "Read from DNS socket" + wosp.socket);
+                    iter.remove();
+                    handleRawDnsResponse(wosp.packet, wosp.socket);
+                    wosp.socket.close();
+                }
+            }
+        }
+        if ((deviceFd.revents & OsConstants.POLLOUT) != 0) {
+            Log.d(TAG, "Write to device");
+            writeToDevice(outFd);
+        }
+        if ((deviceFd.revents & OsConstants.POLLIN) != 0) {
+            Log.d(TAG, "Read from device");
+            readPacketFromDevice(inputStream, packet);        //Chiamata metodo per leggere i pacchetti dal dispositivo
+        }
+
+        return true;
+    }
+
+
+    private void writeToDevice(FileOutputStream outFd) throws VpnNetworkException {
+        try {
+            outFd.write(deviceWrites.poll());
+        } catch (IOException e) {
+            // TODO: Make this more specific, only for: "File descriptor closed"
+            throw new VpnNetworkException("Outgoing VPN output stream closed");
+        }
+    }
+
+    /**
+     * Permette la lettura dei pacchetti
+     * @param inputStream
+     * @param packet
+     * @throws VpnNetworkException
+     * @throws SocketException
+     */
+    //23
+    private void readPacketFromDevice(FileInputStream inputStream, byte[] packet) throws VpnNetworkException, SocketException, PcapNativeException, NotOpenException, EOFException, TimeoutException {
+        // Read the outgoing packet from the input stream.
+        Log.d("DEBUG","metodo readPacketFromDevice LocalVpnService");
+        PackageManager pm = this.getPackageManager();
+        PackageInfo foregroundAppPackageInfo = null;
+
+        String currentApp = "NULL";
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            UsageStatsManager usm = (UsageStatsManager)this.getSystemService(Context.USAGE_STATS_SERVICE);
+            long time = System.currentTimeMillis();
+            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,  time - 1000*1000, time);
+            if (appList != null && appList.size() > 0) {
+                SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+                for (UsageStats usageStats : appList) {
+                    mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+                }
+                if (mySortedMap != null && !mySortedMap.isEmpty()) {
+                    currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+                }
+            }
+        } else {
+            ActivityManager am = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> tasks = am.getRunningAppProcesses();
+            currentApp = tasks.get(0).processName;
+        }
+
+        AppLeak app = new AppLeak();
+        try {
+            foregroundAppPackageInfo = pm.getPackageInfo(currentApp, 0);
+            System.out.println("NOME PACKAGEEE"+foregroundAppPackageInfo.packageName);
+            if(!foregroundAppPackageInfo.packageName.contains("permissionchecker")) {
+                app.setAppName(foregroundAppPackageInfo.applicationInfo.loadLabel(pm).toString());
+                app.setIcon(pm.getApplicationIcon(foregroundAppPackageInfo.packageName));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+
+        Log.e("adapter", "Current App in foreground is: " + foregroundAppPackageInfo.applicationInfo.loadLabel(pm).toString());
+
+        int length;
+
+        try {
+            length = inputStream.read(packet);    //Lettura dallo stream di input
+        } catch (IOException e) {
+            throw new VpnNetworkException("Cannot read frm device", e);
+        }
+
+
+        if (length == 0) {
+            // TODO: Possibly change to exception
+            Log.w(TAG, "Got empty packet!");
+            return;
+        }
+
+        final byte[] readPacket = Arrays.copyOfRange(packet, 0, length);
+
+        vpnWatchDog.handlePacket(readPacket);           //Chiamata metodo per la lettura del pacchetto
+        String hostname = dnsPacketProxy.handleDnsRequest(readPacket);    //Chiamata metodo per la lettura del DNS del pacchetto
+
+        boolean duplicate;
+
+        if(!foregroundAppPackageInfo.packageName.contains("permissionchecker") && hostname.contains(".")) {
+            duplicate = false;
+
+            for(AppLeak applicazione: listaAppLeaks){
+                String compare = applicazione.getHostname().substring(6);
+
+                if(applicazione.getAppName().equals(foregroundAppPackageInfo.applicationInfo.loadLabel(pm).toString())) {
+                    if (applicazione.getHostname().substring(6).equals(hostname)) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+            }
+            if(!duplicate) {
+                if (dnsPacketProxy.getRuleDatabase().isBlocked(hostname.toLowerCase(Locale.ENGLISH))) {
+                    app.setBlocked(true);
+                    app.setHostname("Host: " + hostname);
+                    //app.setHostname("Host:block " + hostname );
+                }
+                else {
+                    app.setHostname("Host: " + hostname);
+                }
+                listaAppLeaks.add(app);
+                countPacket++;
+            }
+
+        }
+    }
+
+    public static int getCountPacket(){
+        return countPacket;
+    }
+
+
+    public static ArrayList<AppLeak> getListaAppLeaks(){
+
+        return listaAppLeaks;
+    }
+
+
+    private void handleRawDnsResponse(IpPacket parsedPacket, DatagramSocket dnsSocket) throws IOException {
+        byte[] datagramData = new byte[1024];
+        DatagramPacket replyPacket = new DatagramPacket(datagramData, datagramData.length);
+        dnsSocket.receive(replyPacket);
+        dnsPacketProxy.handleDnsResponse(parsedPacket, datagramData);
+    }
+
+
+    /**
+     * Viene effettuato il forwarding dei pacchetti, devono essere inviati al DNS server reale
+     * @param packet
+     * @param requestPacket
+     * @throws VpnNetworkException
+     */
+    @Override
+    public void forwardPacket(DatagramPacket packet, IpPacket requestPacket)throws VpnNetworkException {
+        Log.d("DEBUG","metodo forwardPacket AdVpnThread");
+
+        DatagramSocket dnsSocket = null;
+        try {
+            // Packets to be sent to the real DNS server will need to be protected from the VPN
+            dnsSocket = new DatagramSocket();
+
+            vpnService.protect(dnsSocket);
+
+            dnsSocket.send(packet);
+
+            if (requestPacket != null)
+                dnsIn.add(new WaitingOnSocketPacket(dnsSocket, requestPacket));
+            else
+                FileHelper.closeOrWarn(dnsSocket, TAG, "handleDnsRequest: Cannot close socket in error");
+        } catch (IOException e) {
+            FileHelper.closeOrWarn(dnsSocket, TAG, "handleDnsRequest: Cannot close socket in error");
+            if (e.getCause() instanceof ErrnoException) {
+                ErrnoException errnoExc = (ErrnoException) e.getCause();
+                if ((errnoExc.errno == OsConstants.ENETUNREACH) || (errnoExc.errno == OsConstants.EPERM)) {
+                    throw new VpnNetworkException("Cannot send message:", e);
+                }
+            }
+            Log.w(TAG, "handleDnsRequest: Could not send packet to upstream", e);
+            return;
+        }
+    }
+
+    @Override
+    public void queueDeviceWrite(IpPacket packet) {
+        deviceWrites.add(packet.getRawData());
+
+    }
+
+    /**
+     * Helper class holding a socket, the packet we are waiting the answer for, and a time
+     */
+    private static class WaitingOnSocketPacket {
+        final DatagramSocket socket;
+        final IpPacket packet;
+        private final long time;
+
+        WaitingOnSocketPacket(DatagramSocket socket, IpPacket packet) {
+            this.socket = socket;
+            this.packet = packet;
+            this.time = System.currentTimeMillis();
+        }
+
+        long ageSeconds() {
+            return (System.currentTimeMillis() - time) / 1000;
+        }
+    }
+
+
+    private static class WospList implements Iterable<WaitingOnSocketPacket> {
+        private final LinkedList<WaitingOnSocketPacket> list = new LinkedList<WaitingOnSocketPacket>();
+
+        void add(WaitingOnSocketPacket wosp) {
+            if (list.size() > DNS_MAXIMUM_WAITING) {
+                Log.d(TAG, "Dropping socket due to space constraints: " + list.element().socket);
+                list.element().socket.close();
+                list.remove();
+            }
+            while (!list.isEmpty() && list.element().ageSeconds() > DNS_TIMEOUT_SEC) {
+                Log.d(TAG, "Timeout on socket " + list.element().socket);
+                list.element().socket.close();
+                list.remove();
+            }
+            list.add(wosp);
+        }
+
+        public Iterator<WaitingOnSocketPacket> iterator() {
+            return list.iterator();
+        }
+
+        int size() {
+            return list.size();
+        }
+
+    }
+
+
+
+
+
+
+
+
     public void closeInterface()  {
         try {
-            vpnInterface.close();
+            fileDescriptor.close();
             Log.d("DEBUG","CHIUSURA INTERFACCIA");
-            vpnInterface = null;
+
+            fileDescriptor = null;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -310,7 +666,17 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
 
     public void stopVPN(){
         Log.d("DEBUG","stopVPN");
-
+        countPacket = 0;
+        mInterruptFd = FileHelper.closeOrWarn(mInterruptFd, TAG, "stopThread: Could not close interruptFd");
+        mThread.interrupt();
+        /*try {
+            if (mThread != null) mThread.join(2000);
+        } catch (InterruptedException e) {
+            Log.w(TAG, "stopThread: Interrupted while joining thread", e);
+        }*/
+        if (mThread != null && mThread.isAlive()) {
+            Log.w(TAG, "stopThread: Could not kill VPN thread, it is still alive");
+        }
         closeInterface();
         stopForeground(true);                //Elimina la notifica
         GlobalState.VPN_ENABLED = false;
@@ -333,6 +699,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
         editor.commit();
         if(mThread!=null){
             mThread.interrupt();
+            Log.d("DEBUG","thread interrotto");
 
         }
         super.onDestroy();
@@ -351,6 +718,8 @@ public class LocalVpnService extends VpnService implements Handler.Callback {
 
         startForeground(1, notify);
     }
+
+
 }
 
 

@@ -7,7 +7,7 @@
     <string name="stop_monitoring">Interrompi il monitoraggio delle app</string>
     <string name="offToggleState">Off</string>
     <string name="onToggleState">On</string>
-    <string name="nonetworkaccess">Your device does not seem to have network connectivity. Lumen cannot be launched at this moment. If the problem persists, try to reboot your device</string>
+    <string name="nonetworkaccess">Il tuo dispositivo non è connesso a internet. Il monitoraggio non può essere avviato</string>
     <string name="cancel">Cancel</string>
     <string name="connected">VPN Connessa</string>
     <string name="download">Download</string>

@@ -39,14 +39,7 @@
             android:parentActivityName=".MainActivity">
         </activity>
 
-        <!--<service android:name=".privacyLeaks.LocalVpnService"-->
-           <!-- android:permission="android.permission.BIND_VPN_SERVICE"> -->  <!--PERMESSO CHE PERMETTE DI CREARE UNA VPN-->
-           <!-- <intent-filter>
-                <action android:name="android.net.VpnService"/>
-            </intent-filter>
-        </service>-->
-
-        <service android:name=".privacyLeaks.LocalVpnService2"
+        <service android:name=".privacyLeaks.LocalVpnService"
          android:permission="android.permission.BIND_VPN_SERVICE">   <!--PERMESSO CHE PERMETTE DI CREARE UNA VPN-->
         <intent-filter>
              <action android:name="android.net.VpnService"/>

@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.Configuration;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.FileHelper;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.GlobalState;
-import com.example.angiopasqui.permissionchecker.privacyLeaks.LocalVpnService2;
+import com.example.angiopasqui.permissionchecker.privacyLeaks.LocalVpnService;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.PrivacyLeaksMain;
 import com.example.angiopasqui.permissionchecker.privacyLeaks.db.RuleDatabaseUpdateTask;
 
@@ -127,11 +127,13 @@ public class MainActivity extends Activity {
                 }
 
                 if ((!GlobalState.VPN_ENABLED )){         //SE IL PULSANTE E' CLICCATO , E LA VPN NON E' ABILITATA
-                    vpnController(true, MainActivity.this);
+                    if(vpnController(true, MainActivity.this)){
+                        start.setVisibility(View.INVISIBLE);
+                        stop.setVisibility(View.VISIBLE);
+                    }
                 }
 
-                start.setVisibility(View.INVISIBLE);
-                stop.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -224,7 +226,7 @@ public class MainActivity extends Activity {
 
             GlobalState.VPN_ENABLED = true;
             Toast.makeText(context, "Utilizza le tue app per effettuare il monitoraggio", Toast.LENGTH_LONG).show();
-            mActivity.getBaseContext().startService(new Intent(mActivity.getBaseContext(), LocalVpnService2.class));    //VIENE AVVIATO IL SERVIZIO, CREANDO UN INTENT ATTRAVERSO LA CLASSE LocalVpnService
+            mActivity.getBaseContext().startService(new Intent(mActivity.getBaseContext(), LocalVpnService.class));    //VIENE AVVIATO IL SERVIZIO, CREANDO UN INTENT ATTRAVERSO LA CLASSE LocalVpnService
         }
         else{
             showPermissionNotGranted(context);
@@ -239,8 +241,8 @@ public class MainActivity extends Activity {
     }
 
     public static void stopVPNService(){
-        LocalVpnService2.getInstance().stopVPN();
-        context.stopService(new Intent(context,LocalVpnService2.class));
+        LocalVpnService.getInstance().stopVPN();
+        context.stopService(new Intent(context,LocalVpnService.class));
 
         text_init_Monitoring.setText(R.string.init_monitoring);
         textMonitoring.setText(R.string.monitoring_not_active);
