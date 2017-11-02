@@ -882,7 +882,15 @@ public class AppDetails extends Activity {
         }
         else {
             Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            if(perm.getName().contains("permission.WRITE_SETTINGS")){
+                intent.setAction(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+            }
+            else if(perm.getName().contains("permission.SYSTEM_ALERT_WINDOW")){
+                intent.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            }
+            else {
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            }
             Uri uri = Uri.fromParts("package", packageName, null);
             intent.setData(uri);
             startActivity(intent);
