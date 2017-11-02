@@ -27,16 +27,40 @@
         android:layout_marginLeft="10dp"
         />
 
+    <TextView
+        android:id="@+id/titleBlocked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/countPack"
+        android:text="PACCHETTI BLOCCATI :"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/countBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_below="@id/countPack"
+        android:layout_toRightOf="@id/titleBlocked"
+        android:textStyle="bold"
+        android:textColor="#ff0900"
+        android:textSize="20dp"
+        android:layout_marginLeft="10dp"
+        />
+
     <RelativeLayout
         android:id="@+id/containerAppLeaks"
-        android:layout_below="@id/titleList"
+        android:layout_below="@id/titleBlocked"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="2dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#d5f0ff">
+        android:background="#d5f0ff"
+        >
 
         <ListView
             android:id="@+id/listAppLeaks"

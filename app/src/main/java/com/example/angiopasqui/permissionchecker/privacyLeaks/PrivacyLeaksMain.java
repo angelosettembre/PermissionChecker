@@ -49,7 +49,7 @@ public class PrivacyLeaksMain extends Activity {
     public AppLeaksAdapter adapter;
     public int numPacket;
     private TextView countPacket;
-    private TextView blocked;
+    private TextView countBlocked;
 
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("DEBUG","onCreate Activity");
@@ -60,10 +60,8 @@ public class PrivacyLeaksMain extends Activity {
         context = getBaseContext();
         activity = this;
 
-        View v = getLayoutInflater().inflate(R.layout.listappleaks_detail_item,null);
-        blocked = (TextView) v.findViewById(R.id.blocked);
         listView = (ListView)findViewById(R.id.listAppLeaks);
-
+        countBlocked = (TextView) findViewById(R.id.countBlock);
         adapter = new AppLeaksAdapter(this,R.layout.listappleaks_detail_item);
 
         listView.setAdapter(adapter);
@@ -101,6 +99,7 @@ public class PrivacyLeaksMain extends Activity {
             }
         }
         countPacket.setText(String.valueOf(LocalVpnService.getCountPacket()));
+        countBlocked.setText(String.valueOf(LocalVpnService.getCountBlocked()));
         System.out.println("Testoosoasos: "+LocalVpnService.getCountPacket());
     }
 }

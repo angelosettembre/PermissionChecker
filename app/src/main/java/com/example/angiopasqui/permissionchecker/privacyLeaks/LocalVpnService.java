@@ -106,6 +106,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     final ArrayList<InetAddress> upstreamDnsServers = new ArrayList<>();
     public static ArrayList<AppLeak> listaAppLeaks;
     public static int countPacket = 0;
+    public static int countBlocked = 0;
 
     @Override
     public void onCreate() {
@@ -519,16 +520,22 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
                 if (dnsPacketProxy.getRuleDatabase().isBlocked(hostname.toLowerCase(Locale.ENGLISH))) {
                     app.setBlocked(true);
                     app.setHostname("Host: " + hostname);
-                    //app.setHostname("Host:block " + hostname );
+                    countBlocked++;
                 }
                 else {
                     app.setHostname("Host: " + hostname);
+                    countPacket++;
                 }
+
                 listaAppLeaks.add(app);
-                countPacket++;
+
             }
 
         }
+    }
+
+    public static int getCountBlocked(){
+        return countBlocked;
     }
 
     public static int getCountPacket(){
