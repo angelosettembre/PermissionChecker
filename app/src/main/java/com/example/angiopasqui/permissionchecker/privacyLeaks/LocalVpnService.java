@@ -716,7 +716,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     private void updateForegroundNotification(final int message) {
         Log.d("DEBUG","updateForeground");
         Notification.Builder builder = new Notification.Builder(this);
-        builder.setContentTitle("VPN STATUS MONITOR");
+        builder.setContentTitle("PrivacyChecker");
         builder.setSmallIcon(R.drawable.shieldicon);
         builder.setContentText(getString(message));
         builder.setContentIntent(pendingIntent);

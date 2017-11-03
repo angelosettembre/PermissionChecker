@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PermissionChecker</string>
+    <string name="app_name">PrivacyChecker</string>
     <string name="monitoring_active">Monitoraggio attivo</string>
     <string name="monitoring_not_active">Monitoraggio non attivo</string>
     <string name="list_app"><u>Vai alla lista delle app</u></string>
