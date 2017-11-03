@@ -44,7 +44,7 @@
 
         <LinearLayout
             android:id="@+id/containerDeny"
-            android:layout_marginLeft="100dp"
+            android:layout_marginLeft="70dp"
             android:layout_below="@id/descriptionPermission"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,6 +67,7 @@
                 android:layout_below="@id/descriptionPermission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="denyPermission"
                 />
         </LinearLayout>
 
@@ -88,20 +89,22 @@
                 android:onClick="denyPermission"
                 />
             <TextView
+                android:id="@+id/allowText"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
                 android:textStyle="bold"
                 android:layout_below="@id/descriptionPermission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CONSENTI"
+                android:text="CONSENTI IN \nIMPOSTAZIONI"
                 android:layout_toRightOf="@id/allowButton"
+                android:onClick="denyPermission"
                 />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/checkGRANT_DENIED"
-            android:layout_marginLeft="100dp"
+            android:layout_marginLeft="70dp"
             android:layout_alignBottom="@id/containerAllow"
             android:layout_toRightOf="@id/containerAllow"
             android:layout_width="30dp"

@@ -44,6 +44,7 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         TextView denyText;
         LinearLayout containerAllow;
         ImageView allowButton;
+        TextView allowText;
 
         iconPermission = (ImageView) v.findViewById(R.id.iconPermssion);
         namePermission = (TextView) v.findViewById(R.id.namePermission);
@@ -54,6 +55,7 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
         containerAllow = (LinearLayout) v.findViewById(R.id.containerAllow);
         allowButton = (ImageView) v.findViewById(R.id.allowButton);
         denyText = (TextView) v.findViewById(R.id.denyText);
+        allowText = (TextView) v.findViewById(R.id.allowText);
 
         iconPermission.setImageDrawable(perm.getIcon());
         namePermission.setText(perm.getName());
@@ -68,7 +70,7 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
                 denyButton.setImageResource(R.drawable.icon_error);
             }
             else{
-                denyText.setText("NEGA");
+                denyText.setText("NEGA IN \nIMPOSTAZIONI");
                 denyButton.setImageResource(R.drawable.deny);
             }
             containerAllow.setVisibility(View.INVISIBLE);
@@ -84,6 +86,8 @@ public class PermissionAdapter extends ArrayAdapter<Permesso> {
 
         denyButton.setTag(position);
         allowButton.setTag(position);
+        denyText.setTag(position);
+        allowText.setTag(position);
 
         return v;
     }

@@ -847,9 +847,8 @@ public class AppDetails extends Activity {
             } else {
                 builder = new AlertDialog.Builder(this);
             }
-            builder.setTitle("ELIMINAZIONE PERMESSO")
-                    .setMessage("Con questa azione il permesso verrà eliminato per cui l'app potrebbe non funzionare correttamente oppure terminare. Sei sicuro di eliminare? \n"+
-                            "Se elimini, IL FILE APK DI BACKUP SI TROVA IN: \n /storage/emulated/0/Android/data/com.isislab.settembre.privacychecker/files/backup")
+            builder.setTitle("ELIMINAZIONE PERMESSO E DISINSTALLAZIONE APP")
+                    .setMessage("Con questa azione il permesso verrà eliminato per cui l'app potrebbe non funzionare correttamente oppure terminare. Inoltre l'app verrà disinstallata e verrà reinstallata la nuova versione dell'app senza il permesso. \n\nIL FILE APK DI BACKUP SI TROVA IN: \n /storage/emulated/0/Android/data/com.isislab.settembre.privacychecker/files/backup \n\nSei sicuro di eliminare? \n")
                     .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
