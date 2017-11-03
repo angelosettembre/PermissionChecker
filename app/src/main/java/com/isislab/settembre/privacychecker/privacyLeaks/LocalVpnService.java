@@ -3,6 +3,7 @@ package com.isislab.settembre.privacychecker.privacyLeaks;
 
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -11,6 +12,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -19,6 +23,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
@@ -72,9 +77,11 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     private PendingIntent pendingIntent;
     private static LocalVpnService instance;
     private Handler mHandler;
-    Builder builder = new Builder();
     static SharedPreferences preferences ;
     static SharedPreferences.Editor editor ;
+    static Notification.Builder builder;
+    static NotificationManager notificationManager;
+
 
     /* If we had a successful connection for that long, reset retry timeout */
     private static final long RETRY_RESET_SEC = 60;
@@ -116,6 +123,8 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
 
 
             pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, LocalVpnService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
         }
 
         /*if (this.mThread != null) {                                             //Se il thread è già avviato, viene fermato
@@ -426,6 +435,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
 
     /**
      * Permette la lettura dei pacchetti
+     * @source https://stackoverflow.com/questions/30619349/android-5-1-1-and-above-getrunningappprocesses-returns-my-application-packag
      * @param inputStream
      * @param packet
      * @throws VpnNetworkException
@@ -511,7 +521,15 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
                     app.setBlocked(true);
                     app.setHostname("Host: " + hostname);
                     countBlocked++;
+
+                    try {
+                        Drawable drawable = pm.getApplicationIcon(foregroundAppPackageInfo.packageName);
+                        createNotifications(drawable,app.getAppName(),hostname);
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                    }
                 }
+
                 else {
                     app.setHostname("Host: " + hostname);
                     countPacket++;
@@ -522,6 +540,19 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
             }
 
         }
+    }
+
+    public void createNotifications(Drawable d,String nameApp,String hostName){
+        Log.d("DEBUG","METODO createNotifications");
+        builder = new Notification.Builder(this);
+        Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+        builder.setSmallIcon(R.drawable.shieldicon)
+                .setAutoCancel(true)
+                .setContentTitle(nameApp)
+                .setContentText("Host: "+hostName +"  BLOCCATO")
+                .setContentIntent(pendingIntent);
+        notificationManager.notify((int)System.currentTimeMillis(),builder.build());
+
     }
 
     public static int getCountBlocked(){
@@ -586,7 +617,6 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     @Override
     public void queueDeviceWrite(IpPacket packet) {
         deviceWrites.add(packet.getRawData());
-
     }
 
     /**
