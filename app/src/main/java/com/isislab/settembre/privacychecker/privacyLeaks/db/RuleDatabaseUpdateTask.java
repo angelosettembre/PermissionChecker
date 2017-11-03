@@ -1,10 +1,3 @@
-/* Copyright (C) 2017 Julian Andres Klode <jak@jak-linux.org>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- */
 package com.isislab.settembre.privacychecker.privacyLeaks.db;
 
 import android.app.NotificationManager;
@@ -54,17 +47,6 @@ public class RuleDatabaseUpdateTask extends AsyncTask<Void, Void, Void> {
 
         Log.d(TAG, "RuleDatabaseUpdateTask: Setup");
     }
-
-    /*private void setupNotificationBuilder() {
-        notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationBuilder = new NotificationCompat.Builder(context, NotificationChannels.UPDATE_STATUS);
-        notificationBuilder.setContentTitle(context.getString(R.string.updating_hostfiles))
-                .setContentText(context.getString(R.string.updating_hostfiles))
-                .setSmallIcon(R.drawable.ic_refresh);
-
-        notificationBuilder.setProgress(configuration.hosts.items.size(), 0, false);
-    }*/
 
     @Override
     protected Void doInBackground(final Void... configurations) {

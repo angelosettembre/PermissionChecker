@@ -115,25 +115,10 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         if(GlobalState.VPN_ENABLED) {
             super.onCreate();
 
-
-
-            /*if (mHandler == null) {        // The handler is only used to show messages.
-                mHandler = new Handler(this);
-            }*/
-
-
             pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, LocalVpnService.class), PendingIntent.FLAG_UPDATE_CURRENT);
             notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         }
-
-        /*if (this.mThread != null) {                                             //Se il thread è già avviato, viene fermato
-            this.mThread.interrupt();
-        }
-        this.mThread = new Thread(this, "Privacy checker VPN");                 //Creazione nuovo thread
-        this.mThread.setPriority(10);
-        this.mThread.start();*/
-
     }
 
 
@@ -696,11 +681,6 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         countPacket = 0;
         mInterruptFd = FileHelper.closeOrWarn(mInterruptFd, TAG, "stopThread: Could not close interruptFd");
         mThread.interrupt();
-        /*try {
-            if (mThread != null) mThread.join(2000);
-        } catch (InterruptedException e) {
-            Log.w(TAG, "stopThread: Interrupted while joining thread", e);
-        }*/
         if (mThread != null && mThread.isAlive()) {
             Log.w(TAG, "stopThread: Could not kill VPN thread, it is still alive");
         }
