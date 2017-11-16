@@ -184,14 +184,19 @@ public final class FileHelper {
      * @throws ErrnoException See {@link Os#poll(StructPollfd[], int)}
      */
     public static int poll(StructPollfd[] fds, int timeout) throws ErrnoException, InterruptedException {
+        Log.d("DEBUG","metodo poll FileHelper");
         while (true) {
+            Log.d("DEBUG","STO EFFETTUANDO POLLING metodo poll");
             if (Thread.interrupted())
                 throw new InterruptedException();
             try {
-                return Os.poll(fds, timeout);
+                Log.d("DEBUG","POLLING: return Os.poll: "+Os.poll(fds,timeout));
+                return Os.poll(fds, timeout);        //Appena arriva un pacchetto viene restituito il risultato
             } catch (ErrnoException e) {
-                if (e.errno == OsConstants.EINTR)
+                if (e.errno == OsConstants.EINTR) {
+                    Log.d("DEBUG","CONTINUA POLLING....");
                     continue;
+                }
                 throw e;
             }
         }

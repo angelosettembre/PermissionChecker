@@ -285,7 +285,6 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         builder.allowFamily(OsConstants.AF_INET);
         builder.allowFamily(OsConstants.AF_INET6);
 
-        //configurePackages(builder, config);           //Chiamata metodo configurePackages
 
         // Create a new interface using the builder and save the parameters.
         // Creazione interfaccia
@@ -370,8 +369,11 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         }
 
         Log.d(TAG, "doOne: Polling " + polls.length + " file descriptors");
-        int result = FileHelper.poll(polls, vpnWatchDog.getPollTimeout());
+        int result = FileHelper.poll(polls, vpnWatchDog.getPollTimeout());    //Chiamata al metodo poll per effettuare il polling dal
+                                                                               //device, cioè si aspetta che arrivano i pacchetti
+
         if (result == 0) {
+            Log.d("DEBUG","result==0 LocalVpnService");
             vpnWatchDog.handleTimeout();
             return true;
         }
@@ -386,6 +388,8 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
             int i = -1;
             Iterator<WaitingOnSocketPacket> iter = dnsIn.iterator();
             while (iter.hasNext()) {
+                Log.d("DEBUG","SONO ANCORA NEL WHILE LocalVpnService");
+
                 i++;
                 WaitingOnSocketPacket wosp = iter.next();
                 if ((polls[i + 2].revents & OsConstants.POLLIN) != 0) {
@@ -404,7 +408,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
             Log.d(TAG, "Read from device");
             readPacketFromDevice(inputStream, packet);        //Chiamata metodo per leggere i pacchetti dal dispositivo
         }
-
+        Log.d("DEBUG","return True metodo doOne");
         return true;
     }
 
@@ -571,7 +575,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
      */
     @Override
     public void forwardPacket(DatagramPacket packet, IpPacket requestPacket)throws VpnNetworkException {
-        Log.d("DEBUG","metodo forwardPacket AdVpnThread");
+        Log.d("DEBUG","metodo forwardPacket LocalVpnService");
 
         DatagramSocket dnsSocket = null;
         try {
