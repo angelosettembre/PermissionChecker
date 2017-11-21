@@ -73,7 +73,12 @@ public class XMLFile {
         String ret = "";
         int len = Conv(data, ofs, 2) * 2;                               //Shift a sinistra
         for (int i = 0; i < len; i += 2) {
-            ret = new StringBuilder(String.valueOf(ret)).append((char) data[(ofs + i) + 2]).toString();
+            try{
+                ret = new StringBuilder(String.valueOf(ret)).append((char) data[(ofs + i) + 2]).toString();
+            } catch (ArrayIndexOutOfBoundsException e){
+                e.printStackTrace();
+                ret="";
+            }
         }
         return ret;
     }
