@@ -76,7 +76,6 @@ public class XMLFile {
             try{
                 ret = new StringBuilder(String.valueOf(ret)).append((char) data[(ofs + i) + 2]).toString();
             } catch (ArrayIndexOutOfBoundsException e){
-                e.printStackTrace();
                 ret="";
             }
         }
