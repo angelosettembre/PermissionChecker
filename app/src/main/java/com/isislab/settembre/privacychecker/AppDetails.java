@@ -64,6 +64,7 @@ public class AppDetails extends Activity {
     private ProgressDialog dialog;
     private String apkBackup;
     private Permesso perm;
+    private Drawable icon;
 
 
     @Override
@@ -90,8 +91,14 @@ public class AppDetails extends Activity {
 
         Intent i = getIntent();
         appName = i.getStringExtra("Nome app");
-        bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
-        Drawable icon = new BitmapDrawable(getResources(), bitmap);
+        int dim = i.getIntExtra("DIM", 0);
+        if(dim >= 1000000){
+            icon = new BitmapDrawable(getResources(), bitmap);
+        }
+        else{
+            bitmap = (Bitmap) this.getIntent().getParcelableExtra("Icona app");
+            icon = new BitmapDrawable(getResources(), bitmap);
+        }
         packageName = i.getStringExtra("PACKAGE");
         getActionBar().setLogo(icon);
         getActionBar().setTitle(appName);

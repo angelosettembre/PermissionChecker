@@ -86,8 +86,14 @@ public class AppList extends Activity {
                 Log.d("DEBUG","COSSSSAA"+a.getName());
                 Drawable s = a.getIcon();
                 Bitmap bitmap = ((BitmapDrawable)s).getBitmap();
-                i.putExtra("Icona app", bitmap);
-                Log.d("DEBUG","SDASDS"+bitmap);
+                Log.d("DEBUG","DIMENS:"+bitmap.getByteCount());
+                if(bitmap.getByteCount() >= 1000000){
+                    i.putExtra("DIM",bitmap.getByteCount());
+                }
+                else {
+                    i.putExtra("Icona app", bitmap);
+                }
+                Log.d("DEBUG","Bitmap"+bitmap);
                 i.putExtra("PACKAGE",a.getPackageName());
                 Log.d("DEBUG","Pacchetto"+a.getPackageName());
                 startActivity(i);
