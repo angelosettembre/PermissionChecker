@@ -1,1 +1,1 @@
-# PermissionChecker
+# PrivacyChecker
