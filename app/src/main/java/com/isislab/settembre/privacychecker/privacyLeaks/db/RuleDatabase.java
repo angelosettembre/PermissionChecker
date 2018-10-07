@@ -28,6 +28,8 @@ public class RuleDatabase {
 
     private static final String TAG = "RuleDatabase";
     private static final RuleDatabase instance = new RuleDatabase();
+
+    //oggeto di tipo AtomicReference che sarà aggiornato atomicamente quando l'oggetto di riferimento subisce qualche modifica
     final AtomicReference<HashSet<String>> blockedHosts = new AtomicReference<>(new HashSet<String>());
     HashSet<String> nextBlockedHosts = null;
 
@@ -61,7 +63,7 @@ public class RuleDatabase {
         if (endOfLine == -1)
             endOfLine = line.length();
 
-        // Trim spaces
+        // Vengono tolti gli spazi
         while (endOfLine > 0 && Character.isWhitespace(line.charAt(endOfLine - 1)))
             endOfLine--;
 
@@ -96,7 +98,7 @@ public class RuleDatabase {
     }
 
     /**
-     * Checks if a host is blocked.
+     * Checks if a host is blocked. Si controlla se l'host è presente nell'insieme
      *
      * @param host A hostname
      * @return true if the host is blocked, false otherwise.
@@ -138,11 +140,11 @@ public class RuleDatabase {
                 if (Thread.interrupted()) {
                     throw new InterruptedException("Interrupted");
                 }
-                loadItem(context, item);                  //Caricamento host dal file
+                loadItem(context, item);                  //Caricamento host per ogni lista
             }
         }
 
-        blockedHosts.set(nextBlockedHosts);
+        blockedHosts.set(nextBlockedHosts);   //viene settato con l'insieme di host bloccati
         Runtime.getRuntime().gc();
     }
 
@@ -189,12 +191,12 @@ public class RuleDatabase {
         if (item.state == Configuration.Item.STATE_ALLOW) {
             nextBlockedHosts.remove(host);
         } else if (item.state == Configuration.Item.STATE_DENY) {
-            nextBlockedHosts.add(host);
+            nextBlockedHosts.add(host);     //inserimento degli host all'interno dell'insieme
         }
     }
 
     /**
-     * Load a single file
+     * Permette la lettura degli host da ogni lista
      *
      * @param item   The configuration item referencing the file
      * @param reader A reader to read lines from
@@ -205,16 +207,16 @@ public class RuleDatabase {
 
         int count = 0;
         try {
-            Log.d(TAG, "loadBlockedHosts: Reading: " + item.location);          //Lettura hosts.txt
+            Log.d(TAG, "loadBlockedHosts: Reading: " + item.location);          //Lettura di un file hosts.txt
             try (BufferedReader br = new BufferedReader(reader)) {
                 String line;
-                while ((line = br.readLine()) != null) {           //Lettura dal buffer
+                while ((line = br.readLine()) != null) {           //Lettura di ogni host dal buffer
                     if (Thread.interrupted())
                         throw new InterruptedException("Interrupted");
                     String host = parseLine(line);               //Chiamata al metodo parser
                     if (host != null) {
                         count += 1;
-                        addHost(item, host);                     //Chiamata metodo addHost
+                        addHost(item, host);                     //Chiamata metodo addHost per aggiungere l'host all'insieme di oggetti (HashSet)
                     }
                 }
             }

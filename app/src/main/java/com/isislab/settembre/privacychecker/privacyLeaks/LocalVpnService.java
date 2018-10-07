@@ -321,11 +321,11 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     }
 
     private static Set<InetAddress> getDnsServers(Context context) throws VpnNetworkException {
-        Log.d("DEBUG","metodo getDnsServers AdVpnThread");
+        Log.d("DEBUG","metodo getDnsServers LocalVpnSerice");
 
         Set<InetAddress> out = new HashSet<>();
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(VpnService.CONNECTIVITY_SERVICE);
-        // Seriously, Android? Seriously?
+
         NetworkInfo activeInfo = cm.getActiveNetworkInfo();
         if (activeInfo == null)
             throw new VpnNetworkException("No DNS Server");
@@ -360,7 +360,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         polls[1] = blockFd;
         {
             int i = -1;  //Vengono presi i socket
-            for (WaitingOnSocketPacket wosp : dnsIn) {
+            for (WaitingOnSocketPacket wosp : dnsIn) {  //Lettura dei socket dalla lista dei socket
                 i++;
                 StructPollfd pollFd = polls[2 + i] = new StructPollfd();
                 pollFd.fd = ParcelFileDescriptor.fromDatagramSocket(wosp.socket).getFileDescriptor();
@@ -368,9 +368,9 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
             }
         }
 
-        Log.d(TAG, "doOne: Polling " + polls.length + " file descriptors");
+        Log.d(TAG, "doOne: Polling " + polls.length + " file descriptors");    //I file descriptor contengono i socket che arrivano sull'interfaccia
         int result = FileHelper.poll(polls, vpnWatchDog.getPollTimeout());    //Chiamata al metodo poll per effettuare il polling dal
-                                                                               //device, cioè si aspetta che arrivano i pacchetti
+                                                                               //device, cioè si aspetta che arrivano i pacchetti e viene passato il filedescriptor corrente
 
         if (result == 0) {
             Log.d("DEBUG","result==0 LocalVpnService");
@@ -386,29 +386,29 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         // constraints
         {
             int i = -1;
-            Iterator<WaitingOnSocketPacket> iter = dnsIn.iterator();
-            while (iter.hasNext()) {
+            Iterator<WaitingOnSocketPacket> iter = dnsIn.iterator();    //Viene preso l'iteratore della lista
+            while (iter.hasNext()) {                 //Viene scansionata la lista
                 Log.d("DEBUG","SONO ANCORA NEL WHILE LocalVpnService");
 
                 i++;
-                WaitingOnSocketPacket wosp = iter.next();
+                WaitingOnSocketPacket wosp = iter.next();    //Lettura dei socket per la risposta
                 if ((polls[i + 2].revents & OsConstants.POLLIN) != 0) {
                     Log.d(TAG, "Read from DNS socket" + wosp.socket);
-                    iter.remove();
-                    handleRawDnsResponse(wosp.packet, wosp.socket);
-                    wosp.socket.close();
+                    iter.remove();                           //Viene eliminato il socket dalla lista
+                    handleRawDnsResponse(wosp.packet, wosp.socket);     //Viene chiamato il metodo per effettuare la risposta con il socket preso
+                    wosp.socket.close();                                //Il socket viene chiuso
                 }
             }
         }
         if ((deviceFd.revents & OsConstants.POLLOUT) != 0) {
             Log.d(TAG, "Write to device");
-            writeToDevice(outFd);
+            writeToDevice(outFd);    //Viene scritto lo stream di output dell'interfaccia sul dispostivio
         }
-        if ((deviceFd.revents & OsConstants.POLLIN) != 0) {
+        if ((deviceFd.revents & OsConstants.POLLIN) != 0) {      //Se è stato effettuato polling
             Log.d(TAG, "Read from device");
             readPacketFromDevice(inputStream, packet);        //Chiamata metodo per leggere i pacchetti dal dispositivo
         }
-        Log.d("DEBUG","return True metodo doOne");
+        Log.d("DEBUG","FINE METODO doOne return True metodo doOne");
         return true;
     }
 
@@ -473,7 +473,7 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         int length;
 
         try {
-            length = inputStream.read(packet);    //Lettura dallo stream di input
+            length = inputStream.read(packet);    //Lettura dalle lunghezza dell'array dei pacchetti
         } catch (IOException e) {
             throw new VpnNetworkException("Cannot read frm device", e);
         }
@@ -558,7 +558,12 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
         return listaAppLeaks;
     }
 
-
+    /**
+     * Viene fornito il pacchetto preso dal socket per la risposta
+     * @param parsedPacket  pacchetto per la risposta
+     * @param dnsSocket    socket utilizzato per la risposta
+     * @throws IOException
+     */
     private void handleRawDnsResponse(IpPacket parsedPacket, DatagramSocket dnsSocket) throws IOException {
         byte[] datagramData = new byte[1024];
         DatagramPacket replyPacket = new DatagramPacket(datagramData, datagramData.length);
@@ -576,18 +581,18 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     @Override
     public void forwardPacket(DatagramPacket packet, IpPacket requestPacket)throws VpnNetworkException {
         Log.d("DEBUG","metodo forwardPacket LocalVpnService");
-
         DatagramSocket dnsSocket = null;
         try {
-            // Packets to be sent to the real DNS server will need to be protected from the VPN
+            // Packets to be sent to the real DNS server
             dnsSocket = new DatagramSocket();
-
             vpnService.protect(dnsSocket);
-
             dnsSocket.send(packet);
-
             if (requestPacket != null)
-                dnsIn.add(new WaitingOnSocketPacket(dnsSocket, requestPacket));
+                dnsIn.add(new WaitingOnSocketPacket(dnsSocket, requestPacket));   //Viene creato l'oggetto WaitingSocket, avente il socket
+                                                                                  //e il pacchetto, e sarà inserito
+                                                                                  // nella lista di socket in attesa di rispota
+                                                                                  //Il socket utilizzato per inviare il pacchetto
+                                                                                  //sarà utilizzato per effettuare la risposta
             else
                 FileHelper.closeOrWarn(dnsSocket, TAG, "handleDnsRequest: Cannot close socket in error");
         } catch (IOException e) {
@@ -604,12 +609,13 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     }
 
     @Override
-    public void queueDeviceWrite(IpPacket packet) {
+    public void queueDeviceWrite(IpPacket packet) {   //I pacchetti bloccati vengono inseriti all'inerno di una coda di byte
+
         deviceWrites.add(packet.getRawData());
     }
 
     /**
-     * Helper class holding a socket, the packet we are waiting the answer for, and a time
+     * Classe di supporto per mantere: il socket, il pacchetto in attesa per la risposta e il tempo di arrivo
      */
     private static class WaitingOnSocketPacket {
         final DatagramSocket socket;
@@ -628,6 +634,9 @@ public class LocalVpnService extends VpnService implements Handler.Callback,DnsP
     }
 
 
+    /**
+     * Classe utilizzata per l'inserimento dei socket in attesa all'interno di una lista
+     */
     private static class WospList implements Iterable<WaitingOnSocketPacket> {
         private final LinkedList<WaitingOnSocketPacket> list = new LinkedList<WaitingOnSocketPacket>();
 

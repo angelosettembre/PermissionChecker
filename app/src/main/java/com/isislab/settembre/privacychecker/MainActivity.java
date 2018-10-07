@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         stop = (ImageView) findViewById(R.id.stop);
         goPrivacyLeaksActivity = (Button) findViewById(R.id.goPrivacyLeaksActivity);
 
-        refresh();
+        refresh();                  //Chiamata al metodo per caricare le liste degli host
 
         if (preferences.getString("vpn abilitata","").equalsIgnoreCase("si")) {    //SE LA VPN E' AVVIATA
             Log.d("DEBUG","SHARED PREFERENCES");

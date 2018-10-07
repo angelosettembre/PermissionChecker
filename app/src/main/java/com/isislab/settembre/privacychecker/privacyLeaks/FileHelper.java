@@ -191,7 +191,7 @@ public final class FileHelper {
                 throw new InterruptedException();
             try {
                 Log.d("DEBUG","POLLING: return Os.poll: "+Os.poll(fds,timeout));
-                return Os.poll(fds, timeout);        //Appena arriva un pacchetto viene restituito il risultato
+                return Os.poll(fds, timeout);        //Appena arriva un pacchetto viene restituito il risultato restituendo il numero di filedescriptor
             } catch (ErrnoException e) {
                 if (e.errno == OsConstants.EINTR) {
                     Log.d("DEBUG","CONTINUA POLLING....");

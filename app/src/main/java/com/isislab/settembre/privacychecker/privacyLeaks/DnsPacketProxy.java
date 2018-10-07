@@ -87,7 +87,6 @@ public class DnsPacketProxy {
                                 .rawData(responsePayload)
                 );
 
-
         IpPacket ipOutPacket;
         if (requestPacket instanceof IpV4Packet) {
             ipOutPacket = new IpV4Packet.Builder((IpV4Packet) requestPacket)
@@ -107,7 +106,7 @@ public class DnsPacketProxy {
                     .build();
         }
 
-        eventLoop.queueDeviceWrite(ipOutPacket);
+        eventLoop.queueDeviceWrite(ipOutPacket);   //Chiamata del metodo per instradare il pacchetto sul dispositivo
     }
 
 
@@ -191,7 +190,7 @@ public class DnsPacketProxy {
             dnsMsg.getHeader().setFlag(Flags.QR);
             dnsMsg.getHeader().setRcode(Rcode.NOERROR);
             dnsMsg.addRecord(NEGATIVE_CACHE_SOA_RECORD, Section.AUTHORITY);
-            handleDnsResponse(parsedPacket, dnsMsg.toWire());
+            handleDnsResponse(parsedPacket, dnsMsg.toWire());    //Viene chiamato il metodo per bloccare il pacchetto e reindirizzarlo in locale sul dispositivo
         }
         return dnsQueryName;
     }
